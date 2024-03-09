@@ -14,10 +14,10 @@ public protocol ServerAPI: Identifiable, Equatable {
 	var queries: [URLQueryItem]? { get set }
 	var body: Data? { get set }
 	var supportedHTTPMethods: [HTTPMethod] { get set }
-	var supportedReturnObjects: [Codable]? { get set }
+	var supportedReturnObjects: [Codable.Type]? { get set }
 	var timeoutInterval: TimeInterval { get set }
 	
-	init(environment: ServerEnvironment?, path: String, headers: [String: String]?, queries: [URLQueryItem]?, supportedHTTPMethods: [HTTPMethod], supportedReturnObjects: [Codable]?, timeoutInterval: TimeInterval)
+	init(environment: ServerEnvironment?, path: String, headers: [String: String]?, queries: [URLQueryItem]?, supportedHTTPMethods: [HTTPMethod], supportedReturnObjects: [Codable.Type]?, timeoutInterval: TimeInterval)
 	
 	func request(_ method: HTTPMethod, in environment: ServerEnvironment?, additionalHeaders: [String: String]?, additionalQueries: [URLQueryItem]?, httpBodyOverride httpBody: Data?, timeoutInterval: TimeInterval?) throws -> URLRequest
 	func supports<T: Codable>(_ object: T.Type) -> Bool
