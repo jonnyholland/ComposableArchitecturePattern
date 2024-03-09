@@ -236,34 +236,27 @@ public extension Server {
 			logger.info("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) [Start]")
 		}
 		
-		return try await withTaskCancellationHandler(
-			operation: { [weak self] in
-				let (data, response) = try await URLSession.shared.data(for: request)
-				
-				self?.requestsBeingProcessed.remove(requestUID)
-				
-				if self?.logActivity == .all {
-					self?.logger.info("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) [Finish]")
-				}
-				
-				guard try response.analyzeAsHTTPResponse() else {
-					self?.logger.error("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) { Failed }")
-					throw ServerAPIError.unknown(description: "Unable to complete server response.")
-				}
-				
-				if self?.logActivity == .all {
-					self?.logger.info("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) { Success }")
-				}
-				
-				guard let data: T = try self?._decode(data: data, dateDecodingStrategy: dateDecodingStrategy, keyDecodingStrategy: keyDecodingStrategy) else {
-					throw ServerAPIError.unableToDecode(description: NSLocalizedString("Unable to decode object", comment: ""), error: nil)
-				}
-				return data
-			},
-			onCancel: { [weak self] in
-				self?.logger.info("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) [Cancelled]")
-			}
-		)
+		let (data, response) = try await URLSession.shared.data(for: request)
+		
+		self.requestsBeingProcessed.remove(requestUID)
+		
+		if self.logActivity == .all {
+			self.logger.info("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) [Finish]")
+		}
+		
+		guard try response.analyzeAsHTTPResponse() else {
+			self.logger.error("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) { Failed }")
+			throw ServerAPIError.unknown(description: "Unable to complete server response.")
+		}
+		
+		if self.logActivity == .all {
+			self.logger.info("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) { Success }")
+		}
+		
+		guard let data: T = try self._decode(data: data, dateDecodingStrategy: dateDecodingStrategy, keyDecodingStrategy: keyDecodingStrategy) else {
+			throw ServerAPIError.unableToDecode(description: NSLocalizedString("Unable to decode object", comment: ""), error: nil)
+		}
+		return data
 	}
 	
 	/// Send the given request to the server and return the result.
@@ -273,33 +266,24 @@ public extension Server {
 			logger.info("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) [Start]")
 		}
 		
-		return try await withTaskCancellationHandler(
-			operation: {
-				let (_, response) = try await URLSession.shared.data(for: request)
-				
-				self.requestsBeingProcessed.remove(requestUID)
-				
-				if self.logActivity == .all {
-					logger.info("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) [Finish]")
-				}
-				
-				guard try response.analyzeAsHTTPResponse() else {
-					logger.error("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) { Failed }")
-					throw ServerAPIError.unknown(description: "Unable to complete server response.")
-				}
-				
-				if self.logActivity == .all {
-					logger.info("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) { Success }")
-				}
-				
-				return true
-			},
-			onCancel: {
-				if self.logActivity == .all {
-					logger.error("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) { Cancelled }")
-				}
-			}
-		)
+		let (_, response) = try await URLSession.shared.data(for: request)
+		
+		self.requestsBeingProcessed.remove(requestUID)
+		
+		if self.logActivity == .all {
+			logger.info("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) [Finish]")
+		}
+		
+		guard try response.analyzeAsHTTPResponse() else {
+			logger.error("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) { Failed }")
+			throw ServerAPIError.unknown(description: "Unable to complete server response.")
+		}
+		
+		if self.logActivity == .all {
+			logger.info("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) { Success }")
+		}
+		
+		return true
 	}
 	
 	/// Checks if the `apis` contains the given api.
