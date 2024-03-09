@@ -21,6 +21,8 @@ public enum ServerAPIError: Error {
 	case notImplemented(description: String? = nil)
 	/// An error occurred with the server.
 	case server(description: String? = nil, httpStatusCode: Int, jsonObject: Any? = nil)
+	/// A task cancellation occurred.
+	case taskCancelled(description: String? = nil, error: Error? = nil)
 	/// An error occurred while attempting to decode.
 	case unableToDecode(description: String? = nil, error: Error? = nil)
 	/// An error occurred while attempting to parse data.
