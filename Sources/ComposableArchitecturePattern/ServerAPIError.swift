@@ -11,7 +11,7 @@ public enum ServerAPIError: Error {
 	/// The API request is bad.
 	case badRequest(description: String? = nil, error: Error? = nil)
 	/// The API unexpectedly returned empty data.
-	case emptyData
+	case emptyData(description: String? = nil)
 	/// The wrong data returned in response.
 	case incorrectReponseData(description: String? = nil)
 	case local(description: String? = nil, error: Error?)
