@@ -90,12 +90,22 @@ public extension Server {
 			logger.info("\(Date()) - (\(requestUID)) Processing GET Request")
 		}
 		
-		try Task.checkCancellation()
+		do {
+			try Task.checkCancellation()
+		} catch {
+			self.logger.info("\(Date()) - (\(requestUID)) Request to \(String(describing: api.path)) [Cancelled]")
+			throw error
+		}
 		
 		let request = try api.request(.GET, in: self.currentEnvironment, additionalHeaders: self.additionalHTTPHeaders, additionalQueries: queries, httpBodyOverride: httpBody, timeoutInterval: timeoutInterval)
 		let decoded: T = try await self.sendRequest(request, requestUID: requestUID, dateDecodingStrategy: dateDecodingStrategy, keyDecodingStrategy: keyDecodingStrategy)
 		
-		try Task.checkCancellation()
+		do {
+			try Task.checkCancellation()
+		} catch {
+			self.logger.info("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) [Cancelled]")
+			throw error
+		}
 		
 		return decoded
 	}
@@ -113,12 +123,22 @@ public extension Server {
 			logger.info("\(Date()) - (\(requestUID)) Processing POST Request")
 		}
 		
-		try Task.checkCancellation()
+		do {
+			try Task.checkCancellation()
+		} catch {
+			self.logger.info("\(Date()) - (\(requestUID)) Request to \(String(describing: api.path)) [Cancelled]")
+			throw error
+		}
 		
 		let request = try api.request(.POST, in: self.currentEnvironment, additionalHeaders: self.additionalHTTPHeaders, additionalQueries: queries, httpBodyOverride: httpBody, timeoutInterval: timeoutInterval)
 		let decoded: T = try await self.sendRequest(request, requestUID: requestUID, dateDecodingStrategy: dateDecodingStrategy, keyDecodingStrategy: keyDecodingStrategy)
 		
-		try Task.checkCancellation()
+		do {
+			try Task.checkCancellation()
+		} catch {
+			self.logger.info("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) [Cancelled]")
+			throw error
+		}
 		
 		return decoded
 	}
@@ -133,12 +153,22 @@ public extension Server {
 			logger.info("\(Date()) - (\(requestUID)) Processing POST Request")
 		}
 		
-		try Task.checkCancellation()
+		do {
+			try Task.checkCancellation()
+		} catch {
+			self.logger.info("\(Date()) - (\(requestUID)) Request to \(String(describing: api.path)) [Cancelled]")
+			throw error
+		}
 		
 		let request = try api.request(.POST, in: self.currentEnvironment, additionalHeaders: self.additionalHTTPHeaders, additionalQueries: queries, httpBodyOverride: httpBody, timeoutInterval: timeoutInterval)
 		let wasSuccessful = try await self.sendRequest(request, requestUID: requestUID)
 		
-		try Task.checkCancellation()
+		do {
+			try Task.checkCancellation()
+		} catch {
+			self.logger.info("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) [Cancelled]")
+			throw error
+		}
 		
 		return wasSuccessful
 	}
@@ -157,12 +187,22 @@ public extension Server {
 			logger.info("\(Date()) - (\(requestUID)) Processing PUT Request")
 		}
 		
-		try Task.checkCancellation()
+		do {
+			try Task.checkCancellation()
+		} catch {
+			self.logger.info("\(Date()) - (\(requestUID)) Request to \(String(describing: api.path)) [Cancelled]")
+			throw error
+		}
 		
 		let request = try api.request(.PUT, in: self.currentEnvironment, additionalHeaders: self.additionalHTTPHeaders, additionalQueries: queries, httpBodyOverride: httpBody, timeoutInterval: timeoutInterval)
 		let decoded: T = try await self.sendRequest(request, requestUID: requestUID, dateDecodingStrategy: dateDecodingStrategy, keyDecodingStrategy: keyDecodingStrategy)
 		
-		try Task.checkCancellation()
+		do {
+			try Task.checkCancellation()
+		} catch {
+			self.logger.info("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) [Cancelled]")
+			throw error
+		}
 		
 		return decoded
 	}
@@ -178,12 +218,22 @@ public extension Server {
 			logger.info("\(Date()) - (\(requestUID)) Processing PUT Request")
 		}
 		
-		try Task.checkCancellation()
+		do {
+			try Task.checkCancellation()
+		} catch {
+			self.logger.info("\(Date()) - (\(requestUID)) Request to \(String(describing: api.path)) [Cancelled]")
+			throw error
+		}
 		
 		let request = try api.request(.PUT, in: self.currentEnvironment, additionalHeaders: self.additionalHTTPHeaders, additionalQueries: queries, httpBodyOverride: httpBody, timeoutInterval: timeoutInterval)
 		let wasSuccessful = try await self.sendRequest(request, requestUID: requestUID)
 		
-		try Task.checkCancellation()
+		do {
+			try Task.checkCancellation()
+		} catch {
+			self.logger.info("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) [Cancelled]")
+			throw error
+		}
 		
 		return wasSuccessful
 	}
@@ -201,12 +251,22 @@ public extension Server {
 			logger.info("\(Date()) - (\(requestUID)) Processing DELETE Request")
 		}
 		
-		try Task.checkCancellation()
+		do {
+			try Task.checkCancellation()
+		} catch {
+			self.logger.info("\(Date()) - (\(requestUID)) Request to \(String(describing: api.path)) [Cancelled]")
+			throw error
+		}
 		
 		let request = try api.request(.DELETE, in: self.currentEnvironment, additionalHeaders: self.additionalHTTPHeaders, additionalQueries: queries, httpBodyOverride: httpBody, timeoutInterval: timeoutInterval)
 		let decoded: T = try await self.sendRequest(request, requestUID: requestUID, dateDecodingStrategy: dateDecodingStrategy, keyDecodingStrategy: keyDecodingStrategy)
 		
-		try Task.checkCancellation()
+		do {
+			try Task.checkCancellation()
+		} catch {
+			self.logger.info("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) [Cancelled]")
+			throw error
+		}
 		
 		return decoded
 	}
@@ -221,12 +281,22 @@ public extension Server {
 			logger.info("\(Date()) - (\(requestUID)) Processing DELETE Request")
 		}
 		
-		try Task.checkCancellation()
+		do {
+			try Task.checkCancellation()
+		} catch {
+			self.logger.info("\(Date()) - (\(requestUID)) Request to \(String(describing: api.path)) [Cancelled]")
+			throw error
+		}
 		
 		let request = try api.request(.DELETE, in: self.currentEnvironment, additionalHeaders: self.additionalHTTPHeaders, additionalQueries: queries, httpBodyOverride: httpBody, timeoutInterval: timeoutInterval)
 		let wasSuccessful = try await self.sendRequest(request, requestUID: requestUID)
 		
-		try Task.checkCancellation()
+		do {
+			try Task.checkCancellation()
+		} catch {
+			self.logger.info("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) [Cancelled]")
+			throw error
+		}
 		
 		return wasSuccessful
 	}
