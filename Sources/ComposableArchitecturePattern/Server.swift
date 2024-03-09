@@ -87,13 +87,13 @@ public extension Server {
 		let requestUID = UUID()
 		self.requestsBeingProcessed.insert(requestUID)
 		if self.logActivity == .all {
-			logger.info("\(Date()) - (\(requestUID)) Processing GET Request")
+			logger.info("\(Date()) [GET] - (\(requestUID)) Processing GET Request")
 		}
 		
 		do {
 			try Task.checkCancellation()
 		} catch {
-			self.logger.info("\(Date()) - (\(requestUID)) Request to \(String(describing: api.path)) [Cancelled]")
+			self.logger.error("\(Date()) - (\(requestUID)) Request to \(String(describing: api.path)) [Cancelled]")
 			throw ServerAPIError.taskCancelled(error: error)
 		}
 		
@@ -103,7 +103,7 @@ public extension Server {
 		do {
 			try Task.checkCancellation()
 		} catch {
-			self.logger.info("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) [Cancelled]")
+			self.logger.error("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) [Cancelled]")
 			throw ServerAPIError.taskCancelled(error: error)
 		}
 		
@@ -126,7 +126,7 @@ public extension Server {
 		do {
 			try Task.checkCancellation()
 		} catch {
-			self.logger.info("\(Date()) - (\(requestUID)) Request to \(String(describing: api.path)) [Cancelled]")
+			self.logger.error("\(Date()) - (\(requestUID)) Request to \(String(describing: api.path)) [Cancelled]")
 			throw ServerAPIError.taskCancelled(error: error)
 		}
 		
@@ -136,7 +136,7 @@ public extension Server {
 		do {
 			try Task.checkCancellation()
 		} catch {
-			self.logger.info("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) [Cancelled]")
+			self.logger.error("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) [Cancelled]")
 			throw ServerAPIError.taskCancelled(error: error)
 		}
 		
@@ -156,7 +156,7 @@ public extension Server {
 		do {
 			try Task.checkCancellation()
 		} catch {
-			self.logger.info("\(Date()) - (\(requestUID)) Request to \(String(describing: api.path)) [Cancelled]")
+			self.logger.error("\(Date()) - (\(requestUID)) Request to \(String(describing: api.path)) [Cancelled]")
 			throw ServerAPIError.taskCancelled(error: error)
 		}
 		
@@ -166,7 +166,7 @@ public extension Server {
 		do {
 			try Task.checkCancellation()
 		} catch {
-			self.logger.info("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) [Cancelled]")
+			self.logger.error("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) [Cancelled]")
 			throw ServerAPIError.taskCancelled(error: error)
 		}
 		
@@ -190,7 +190,7 @@ public extension Server {
 		do {
 			try Task.checkCancellation()
 		} catch {
-			self.logger.info("\(Date()) - (\(requestUID)) Request to \(String(describing: api.path)) [Cancelled]")
+			self.logger.error("\(Date()) - (\(requestUID)) Request to \(String(describing: api.path)) [Cancelled]")
 			throw ServerAPIError.taskCancelled(error: error)
 		}
 		
@@ -200,7 +200,7 @@ public extension Server {
 		do {
 			try Task.checkCancellation()
 		} catch {
-			self.logger.info("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) [Cancelled]")
+			self.logger.error("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) [Cancelled]")
 			throw ServerAPIError.taskCancelled(error: error)
 		}
 		
@@ -221,7 +221,7 @@ public extension Server {
 		do {
 			try Task.checkCancellation()
 		} catch {
-			self.logger.info("\(Date()) - (\(requestUID)) Request to \(String(describing: api.path)) [Cancelled]")
+			self.logger.error("\(Date()) - (\(requestUID)) Request to \(String(describing: api.path)) [Cancelled]")
 			throw ServerAPIError.taskCancelled(error: error)
 		}
 		
@@ -231,7 +231,7 @@ public extension Server {
 		do {
 			try Task.checkCancellation()
 		} catch {
-			self.logger.info("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) [Cancelled]")
+			self.logger.error("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) [Cancelled]")
 			throw ServerAPIError.taskCancelled(error: error)
 		}
 		
@@ -254,7 +254,7 @@ public extension Server {
 		do {
 			try Task.checkCancellation()
 		} catch {
-			self.logger.info("\(Date()) - (\(requestUID)) Request to \(String(describing: api.path)) [Cancelled]")
+			self.logger.error("\(Date()) - (\(requestUID)) Request to \(String(describing: api.path)) [Cancelled]")
 			throw ServerAPIError.taskCancelled(error: error)
 		}
 		
@@ -264,7 +264,7 @@ public extension Server {
 		do {
 			try Task.checkCancellation()
 		} catch {
-			self.logger.info("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) [Cancelled]")
+			self.logger.error("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) [Cancelled]")
 			throw ServerAPIError.taskCancelled(error: error)
 		}
 		
@@ -284,7 +284,7 @@ public extension Server {
 		do {
 			try Task.checkCancellation()
 		} catch {
-			self.logger.info("\(Date()) - (\(requestUID)) Request to \(String(describing: api.path)) [Cancelled]")
+			self.logger.error("\(Date()) - (\(requestUID)) Request to \(String(describing: api.path)) [Cancelled]")
 			throw ServerAPIError.taskCancelled(error: error)
 		}
 		
@@ -294,7 +294,7 @@ public extension Server {
 		do {
 			try Task.checkCancellation()
 		} catch {
-			self.logger.info("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) [Cancelled]")
+			self.logger.error("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) [Cancelled]")
 			throw ServerAPIError.taskCancelled(error: error)
 		}
 		
