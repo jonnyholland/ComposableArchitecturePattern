@@ -74,7 +74,11 @@ public extension ServerAPI {
 			}
 		}
 		request.httpMethod = httpMethod.rawValue
-		request.httpBody = try self._encodedData(httpBody)
+		if let httpBody {
+			request.httpBody = try self._encodedData(httpBody)
+		} else if let body {
+			request.httpBody = try self._encodedData(body)
+		}
 		
 		return request
 	}
