@@ -303,7 +303,7 @@ public extension Server {
 	
 	func sendRequest<T: Codable>(_ request: URLRequest, requestUID: UUID, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy = .iso8601, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy = .useDefaultKeys) async throws -> T {
 		if self.logActivity == .all {
-			logger.info("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) [Start]")
+			self.logger.info("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) [Start]")
 		}
 		
 		let (data, response) = try await URLSession.shared.data(for: request)

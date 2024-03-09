@@ -14,7 +14,7 @@ public enum ServerAPIError: Error {
 	case emptyData(description: String? = nil)
 	/// The wrong data returned in response.
 	case incorrectReponseData(description: String? = nil)
-	case local(description: String? = nil, error: Error?)
+	case local(description: String? = nil, error: Error? = nil)
 	/// An error occurred with the network.
 	case network(description: String? = nil)
 	/// Functionality to complete the API request is incomplete.
