@@ -15,7 +15,7 @@ public enum HTTPMethod: String, Equatable {
 	case PUT
 }
 
-public protocol Server: AnyActor {
+public protocol Server: Actor {
 	/// Environments supported by this server.
 	var environments: [ServerEnvironment] { get }
 	/// The current environment being used by this server to process requests.
