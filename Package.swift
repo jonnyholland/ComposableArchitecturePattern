@@ -17,53 +17,18 @@ let package = Package(
 		.library(
 			name: "ComposableArchitecturePattern",
 			targets: ["ComposableArchitecturePattern"]),
-		.library(
-			name: "Composable",
-			targets: ["Composable"]
-		),
-		.executable(
-			name: "ComposableClient",
-			targets: ["ComposableClient"]
-		),
     ],
     dependencies: [
-		.package(url: "https://github.com/apple/swift-syntax.git", from: "509.0.2"),
     ],
     targets: [
-		.macro(
-			name: "ComposableMacros",
-			dependencies: [
-				.product(
-					name: "SwiftSyntaxMacros",
-					package: "swift-syntax"
-				),
-				.product(
-					name: "SwiftCompilerPlugin",
-					package: "swift-syntax"
-				)
-			]
-		),
-		
-		.target(
-			name: "Composable",
-			dependencies: ["ComposableMacros"]
-		),
-		
-		.executableTarget(
-			name: "ComposableClient",
-			dependencies: ["Composable"]
-		),
-		
 		.target(
 			name: "ComposableArchitecturePattern",
-			dependencies: ["Composable"]
+			dependencies: []
 		),
 
         .testTarget(
             name: "ComposableArchitecturePatternTests",
             dependencies: [
-                "ComposableMacros",
-                .product(name: "SwiftSyntaxMacrosTestSupport", package: "swift-syntax"),
             ]
         ),
     ]
