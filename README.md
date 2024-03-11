@@ -15,8 +15,7 @@ It would behoove you to read through [Core Principles](#core-principles) to full
 - [Harvard Art Museum](https://github.com/jonnyholland/HarvardArt/tree/main)
 
 ## Core Principles
-1. Composable
-Each object and view should be composable, which means self-contained. So, we should avoid large complex views that are heavily dependent upon another view or on a specific object. There's several ways we can accomplish this:
+1. Composable. Each object and view should be composable, which means self-contained. So, we should avoid large complex views that are heavily dependent upon another view or on a specific object. There's several ways we can accomplish this:
 
 a.) Protocols. This is a great way of isolating the view to whatever we define in the protocol so the view can be used anywhere that can conform and provide what the protocol entails.
 ```swift
