@@ -1,13 +1,18 @@
 # Composable Architecture Pattern (CAP)
 
-This package is designed to demonstrate how to build composable views and code so the views and code can be testable, scalable, and reusable. This also provides a library that's intended to very basic so you don't have to learn the library or use CAP as a framework but rather as a source you can dip into and use when you want or need to.
+This package is designed to demonstrate how to build composable views and code so the views and code can be testable, scalable, and reusable. This also provides a library that's intended to very basic so you don't have to learn the library or use CAP as a framework but rather as a source you can dip into and use when you want or need to. A demos of how to use CAP can be found in [Demo Apps](#demo-apps).
 
-Composable means self-sustained (1), which means each view should be able to sustain itself. In order to do that the view should have an approach that allows actions in the view to be testable. This means giving the view what it needs so it can be testable, no more no less. This also means architecting our code so we can have a separation of concerns so we're not passing around large view models or objects into each view. There's several ways this can be done and will be discussed below.
+Why CAP? Well, since I've been developing apps in SwiftUI for the past 5/6 years, one thing had become very clear to me: there's really not a great way of architecting SwiftUI apps without using older, mostly unrelevant methodologies, such as MVVM. Additionally, I saw bad habits: large observable objects being passed around from view to view or worse yet each view getting an observable object. CAP is designed to fix this by giving general guidelines (protocols) to use to structure and guide your code. See demo apps for examples: [Demo Apps](#demo-apps).
+
+Composable means self-sustained<sup>1</sup>, which means each view should be able to sustain itself. In order to do that the view should have an approach that allows actions in the view to be testable. This means giving the view what it needs so it can be testable, no more no less. This also means architecting our code so we can have a separation of concerns so we're not passing around large view models or objects into each view. There's several ways this can be done and will be discussed below.
 
 You'll notice this is called a "pattern". This is because I believe software architecture always needs guidance but not always a library or framework. This approach allows you to make use of the architecture pattern and the library as you see fit. While being light and overall easy to use, writing good code takes time and effort and your goal should be to improve as a developer to architect safe code that hopefully is scalable and reusable.
 
 ## Get Started
 It would behoove you to read through [Core Principles](#core-principles) to fully understand the overall logic behind this architecture pattern. 
+
+# Demo Apps
+- [Harvard Art Museum](https://github.com/jonnyholland/HarvardArt/tree/main)
 
 ## Core Principles
 1. Composable
