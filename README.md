@@ -11,7 +11,7 @@ You'll notice this is called a "pattern". This is because I believe software arc
 ## Get Started
 It would behoove you to read through [Core Principles](#core-principles) to fully understand the overall logic behind this architecture pattern. 
 
-# Demo Apps
+## Demo Apps
 - [Harvard Art Museum](https://github.com/jonnyholland/HarvardArt/tree/main)
 
 ## Core Principles
