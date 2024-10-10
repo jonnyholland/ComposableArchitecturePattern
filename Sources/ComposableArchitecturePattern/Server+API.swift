@@ -56,6 +56,30 @@ public extension ServerAPI {
 		let httpMethod = self.supportedHTTPMethods[httpMethodIndex]
 		return try? self.request(httpMethod)
 	}
+	
+	var environment: ServerEnvironment? {
+		return nil
+	}
+	
+	var headers: [String: String]? {
+		return nil
+	}
+	
+	var queries: [URLQueryItem]? {
+		return nil
+	}
+	
+	var body: Data? {
+		return nil
+	}
+	
+	var supportedReturnObjects: [Codable.Type]? {
+		return nil
+	}
+	
+	func supports<T: Codable>(_ object: T.Type) -> Bool {
+		return self.supportedReturnObjects?.contains(where: { object == $0 }) ?? false
+	}
 }
 
 public extension ServerAPI {
