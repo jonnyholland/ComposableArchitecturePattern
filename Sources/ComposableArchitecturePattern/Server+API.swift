@@ -17,9 +17,14 @@ public protocol ServerAPI: Identifiable, Equatable {
 	var supportedReturnObjects: [Codable.Type]? { get set }
 	var timeoutInterval: TimeInterval { get set }
 	
+	/// Initialize with the provided values.
+	///
+	/// - Note: It is highly encouraged to define your `supportedReturnObjects` to ensure `-supports<T: Codable>(_:)` is able to automatically verify against this.
 	init(environment: ServerEnvironment?, path: String, headers: [String: String]?, queries: [URLQueryItem]?, supportedHTTPMethods: [HTTPMethod], supportedReturnObjects: [Codable.Type]?, timeoutInterval: TimeInterval)
 	
 	func request(_ method: HTTPMethod, in environment: ServerEnvironment?, additionalHeaders: [String: String]?, additionalQueries: [URLQueryItem]?, httpBodyOverride httpBody: Data?, timeoutInterval: TimeInterval?) throws -> URLRequest
+	
+	/// Whether or not the provided type is supported by the API. Defaults to checking if the type is found in `supportedReturnObjects` or returning `false` if not found.
 	func supports<T: Codable>(_ object: T.Type) -> Bool
 }
 

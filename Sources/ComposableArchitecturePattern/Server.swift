@@ -25,9 +25,12 @@ public protocol Server: Actor {
 	/// Whether or not to log all activity wtih this server.
 	var logActivity: LogActivity { get }
 	
+	/// All the API's supported by the server.
 	var apis: [any ServerAPI] { get }
 	
+	/// Flag to not all the server to send any request that is not explicitly defined in `apis`.
 	var blockAllAPIsNotSupported: Bool { get }
+	/// All the requests currently being processed.
 	var requestsBeingProcessed: Set<UUID> { get set }
 	
 	var logger: Logger { get }
@@ -41,18 +44,39 @@ public protocol Server: Actor {
 		logActivity: LogActivity
 	)
 	
+	/// Sends a GET request and returns the specified value type from the given API.
+	///
+	/// - Note: The server automatically checks against these values to check whether they're supported by the API or not. For instance, if the specified return type is not supported, a `ServerAPIError.badRequest` error is thrown. If the specified API doesn't support this function, a `ServerAPIError.badRequest` error is thrown.
 	func get<A: ServerAPI, T: Codable>(_ api: A, queries: [URLQueryItem]?, httpBodyOverride httpBody: Data?, timeoutInterval: TimeInterval?, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy) async throws -> T
 	
+	/// Sends a POST request and returns the specified value type from the given API.
+	///
+	/// - Note: The server automatically checks against these values to check whether they're supported by the API or not. For instance, if the specified return type is not supported, a `ServerAPIError.badRequest` error is thrown. If the specified API doesn't support this function, a `ServerAPIError.badRequest` error is thrown.
 	func post<A: ServerAPI, T: Codable>(_ api: A, queries: [URLQueryItem]?, httpBodyOverride httpBody: Data?, timeoutInterval: TimeInterval?, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy) async throws -> T
 	
+	/// Sends a POST request and returns the specified value type from the given API.
+	///
+	/// - Note: The server automatically checks against these values to check whether they're supported by the API or not. For instance, if the return type of `Bool` is not supported, a `ServerAPIError.badRequest` error is thrown. If the specified API doesn't support this function, a `ServerAPIError.badRequest` error is thrown.
 	func post<A: ServerAPI>(_ api: A, queries: [URLQueryItem]?, httpBodyOverride httpBody: Data?, timeoutInterval: TimeInterval?, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy) async throws -> Bool
 	
+	/// Sends a PUT request and returns the specified value type from the given API.
+	///
+	/// - Note: The server automatically checks against these values to check whether they're supported by the API or not. For instance, if the specified return type is not supported, a `ServerAPIError.badRequest` error is thrown. If the specified API doesn't support this function, a `ServerAPIError.badRequest` error is thrown.
 	func put<A: ServerAPI, T: Codable>(_ api: A, queries: [URLQueryItem]?, httpBodyOverride httpBody: Data?, timeoutInterval: TimeInterval?, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy) async throws -> T
 	
+	/// Sends a PUT request and returns the specified value type from the given API.
+	///
+	/// - Note: The server automatically checks against these values to check whether they're supported by the API or not. For instance, if the return type of `Bool` is not supported, a `ServerAPIError.badRequest` error is thrown. If the specified API doesn't support this function, a `ServerAPIError.badRequest` error is thrown.
 	func put<A: ServerAPI>(_ api: A, queries: [URLQueryItem]?, httpBodyOverride httpBody: Data?, timeoutInterval: TimeInterval?, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy) async throws -> Bool
 	
+	/// Sends a DELETE request and returns the specified value type from the given API.
+	///
+	/// - Note: The server automatically checks against these values to check whether they're supported by the API or not. For instance, if the specified return type is not supported, a `ServerAPIError.badRequest` error is thrown. If the specified API doesn't support this function, a `ServerAPIError.badRequest` error is thrown.
 	func delete<A: ServerAPI, T: Codable>(_ api: A, queries: [URLQueryItem]?, httpBodyOverride httpBody: Data?, timeoutInterval: TimeInterval?, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy) async throws -> T
 	
+	/// Sends a DELETE request and returns the specified value type from the given API.
+	///
+	/// - Note: The server automatically checks against these values to check whether they're supported by the API or not. For instance, if the return type of `Bool` is not supported, a `ServerAPIError.badRequest` error is thrown. If the specified API doesn't support this function, a `ServerAPIError.badRequest` error is thrown.
 	func delete<A: ServerAPI>(_ api: A, queries: [URLQueryItem]?, httpBodyOverride httpBody: Data?, timeoutInterval: TimeInterval?, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy) async throws -> Bool
 	
 	/// Send the given request to the server and return the decoded object.
