@@ -21,7 +21,7 @@ public protocol Server: Actor {
 	/// The current environment being used by this server to process requests.
 	var currentEnvironment: ServerEnvironment? { get }
 	/// Additional headers that may be required/needed for interaction with this server.
-	var additionalHTTPHeaders: [String : String]? { get }
+	var additionalHTTPHeaders: [String: String]? { get }
 	/// Whether or not to log all activity wtih this server.
 	var logActivity: LogActivity { get }
 	
@@ -48,7 +48,6 @@ public protocol Server: Actor {
 	///
 	/// - Note: The server automatically checks against these values to check whether they're supported by the API or not. For instance, if the specified return type is not supported, a `ServerAPIError.badRequest` error is thrown. If the specified API doesn't support this function, a `ServerAPIError.badRequest` error is thrown.
 	func get<A: ServerAPI, T: Codable>(_ api: A, queries: [URLQueryItem]?, httpBodyOverride httpBody: Data?, timeoutInterval: TimeInterval?, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy) async throws -> T
-	
 	/// Sends a POST request and returns the specified value type from the given API.
 	///
 	/// - Note: The server automatically checks against these values to check whether they're supported by the API or not. For instance, if the specified return type is not supported, a `ServerAPIError.badRequest` error is thrown. If the specified API doesn't support this function, a `ServerAPIError.badRequest` error is thrown.
