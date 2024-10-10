@@ -23,6 +23,25 @@ public protocol ServerAPI: Identifiable, Equatable {
 	func supports<T: Codable>(_ object: T.Type) -> Bool
 }
 
+extension Sequence where Element == Codable.Type {
+	func isEqual(to other: [Codable.Type]) -> Bool {
+		self.contains(where: { type in other.contains(where: { $0 == type }) })
+	}
+}
+
+extension ServerAPI {
+	func isEqual(to api: any ServerAPI) -> Bool {
+		let returnObjectsEquatable = {
+			if let supportedReturnObjects, let otherSupportedReturnObjects = api.supportedReturnObjects {
+				return supportedReturnObjects.isEqual(to: otherSupportedReturnObjects)
+			}
+			return true
+		}
+		
+		return self.environment == api.environment && self.path == api.path && self.headers == api.headers && self.queries == api.queries && self.body == api.body && self.supportedHTTPMethods == api.supportedHTTPMethods && self.timeoutInterval == api.timeoutInterval && returnObjectsEquatable()
+	}
+}
+
 public extension ServerAPI {
 	subscript(httpMethod: HTTPMethod) -> URLRequest? {
 		guard let httpMethodIndex = self.supportedHTTPMethods.firstIndex(of: httpMethod) else {
