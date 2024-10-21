@@ -35,6 +35,10 @@ extension Sequence where Element == Codable.Type {
 }
 
 extension ServerAPI {
+	static func ==(lhs: Self, rhs: Self) -> Bool {
+		lhs.id == rhs.id
+	}
+	
 	func isEqual(to api: any ServerAPI) -> Bool {
 		let returnObjectsEquatable = {
 			if let supportedReturnObjects, let otherSupportedReturnObjects = api.supportedReturnObjects {
