@@ -39,7 +39,7 @@ public protocol Server: Actor {
 	init(
 		environments: [ServerEnvironment],
 		currentEnvironment: ServerEnvironment?,
-		additionalHTTPHeaders: [String : String]?,
+		additionalHTTPHeaders: [String: String]?,
 		supportedAPIs: [any ServerAPI],
 		logActivity: LogActivity
 	)
