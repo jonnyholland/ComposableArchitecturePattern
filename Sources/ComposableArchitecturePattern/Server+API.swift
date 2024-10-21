@@ -16,6 +16,10 @@ public protocol ServerAPI: Identifiable, Equatable {
 	var supportedHTTPMethods: [HTTPMethod] { get set }
 	var supportedReturnObjects: [Codable.Type]? { get set }
 	var timeoutInterval: TimeInterval { get set }
+	/// Whether to block this API if the server is attempting to use a different environment.
+	///
+	/// For example, perhaps the server is using a specific environment but this API uses a different environment for some other purpose, such as a specific authentication endpoint. Setting this to `true` would mean that the API will throw an error if the environments don't match up.
+	var strictEnvironmentEnforcement: Bool { get }
 	
 	/// Initialize with the provided values.
 	///
@@ -91,7 +95,7 @@ public extension ServerAPI {
 		guard self.supportedHTTPMethods.contains(httpMethod) else {
 			throw ServerAPIError.badRequest(description: "\(httpMethod.rawValue) is not supported for this API.")
 		}
-		if (self.environment != nil && environment != self.environment) {
+		if self.strictEnvironmentEnforcement, (self.environment != nil && environment != self.environment) {
 			throw ServerAPIError.badRequest(description: "API (\(self.id)) requires to use environment: \(self.environment?.description ?? "Unknown environment")")
 		}
 		
