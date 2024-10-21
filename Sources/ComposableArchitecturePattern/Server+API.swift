@@ -39,7 +39,7 @@ extension Sequence where Element == Codable.Type {
 }
 
 extension ServerAPI {
-	static func ==(lhs: Self, rhs: Self) -> Bool {
+	public static func ==(lhs: Self, rhs: Self) -> Bool {
 		lhs.id == rhs.id
 	}
 	
