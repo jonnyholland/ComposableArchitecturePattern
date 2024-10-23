@@ -404,8 +404,11 @@ public extension Server {
 		guard let additionalHeaders else {
 			return self.additionalHTTPHeaders
 		}
+		guard var additionalHTTPHeaders else {
+			return additionalHeaders
+		}
 		
-		return self.additionalHTTPHeaders?.merging(additionalHeaders, uniquingKeysWith: { $1 })
+		return additionalHTTPHeaders.merging(additionalHeaders, uniquingKeysWith: { $1 })
 	}
 }
 
