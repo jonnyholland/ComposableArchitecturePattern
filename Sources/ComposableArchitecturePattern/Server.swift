@@ -8,6 +8,7 @@
 import SwiftUI
 import OSLog
 
+/// The HTTP method type.
 public enum HTTPMethod: String, Equatable {
 	case DELETE
 	case GET
@@ -15,6 +16,9 @@ public enum HTTPMethod: String, Equatable {
 	case PUT
 }
 
+/// An actor that handles server interactions.
+///
+/// This is the equivalent of a web service. The idea is for this to be the base actor to handle all server interactions that correspond to the defined API's. This ensures API's can be scoped to specific servers, thus allowing you to scope feature support.
 public protocol Server: Actor {
 	/// Environments supported by this server.
 	var environments: [ServerEnvironment] { get }
@@ -33,6 +37,7 @@ public protocol Server: Actor {
 	/// All the requests currently being processed.
 	var requestsBeingProcessed: Set<UUID> { get set }
 	
+	/// The logger to use with communicating server activity.
 	var logger: Logger { get }
 	
 	/// Designated initializer
