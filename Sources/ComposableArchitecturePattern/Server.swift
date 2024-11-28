@@ -45,12 +45,8 @@ public protocol Server: Actor {
 	
 	/// Designated initializer
 	init(
-		urlSession: URLSession,
 		environments: [ServerEnvironment],
-		currentEnvironment: ServerEnvironment?,
-		additionalHTTPHeaders: [String: String]?,
-		supportedAPIs: [any ServerAPI],
-		logActivity: LogActivity
+		supportedAPIs: [any ServerAPI]
 	)
 	
 	/// Sends a GET request and returns the specified value type from the given API.
@@ -118,6 +114,12 @@ public extension Server {
 	var urlSession: URLSession {
 		URLSession.shared
 	}
+	
+	var currentEnvironment: ServerEnvironment? { nil }
+	
+	var additionalHTTPHeaders: [String: String]? { nil }
+	
+	var blockAllAPIsNotSupported: Bool { true }
 	
 	// GETs
 	func get<T: Codable>(_ api: any ServerAPI, additionalHeaders: [String: String]? = nil, queries: [URLQueryItem]? = nil, httpBodyOverride httpBody: Data? = nil, timeoutInterval: TimeInterval? = nil, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy = .iso8601, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy = .useDefaultKeys) async throws -> T {
