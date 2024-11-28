@@ -60,25 +60,17 @@ public extension ServerAPI {
 		return try? self.request(httpMethod)
 	}
 	
-	var environment: ServerEnvironment? {
-		return nil
-	}
+	var environment: ServerEnvironment? { nil }
 	
-	var headers: [String: String]? {
-		return nil
-	}
+	var headers: [String: String]? { nil }
 	
-	var queries: [URLQueryItem]? {
-		return nil
-	}
+	var queries: [URLQueryItem]? { nil }
 	
-	var body: Data? {
-		return nil
-	}
+	var body: Data? { nil }
 	
-	var supportedReturnObjects: [Codable.Type]? {
-		return nil
-	}
+	var supportedReturnObjects: [Codable.Type]? { nil }
+	
+	var timeoutInterval: TimeInterval { 60 }
 	
 	func supports<T: Codable>(_ object: T.Type) -> Bool {
 		return self.supportedReturnObjects?.contains(where: { object == $0 }) ?? false
