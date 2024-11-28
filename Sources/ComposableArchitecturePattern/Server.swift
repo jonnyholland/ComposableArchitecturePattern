@@ -111,8 +111,8 @@ public extension Server {
 		return .all
 	}
 	
-	var loggers: Logger {
-		return Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.Coordinator", category: String(describing: Self.self))
+	var logger: Logger {
+		return Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.Server", category: String(describing: Self.self))
 	}
 	
 	var urlSession: URLSession {
