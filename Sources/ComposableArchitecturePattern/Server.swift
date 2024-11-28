@@ -54,6 +54,7 @@ public protocol Server: Actor {
 	///	- Note: `additionalHeaders` will override a key-value in `additionalHTTPHeaders`.
 	/// - Note: The server automatically checks against these values to check whether they're supported by the API or not. For instance, if the specified return type is not supported, a `ServerAPIError.badRequest` error is thrown. If the specified API doesn't support this function, a `ServerAPIError.badRequest` error is thrown.
 	func get<T: Codable>(_ api: any ServerAPI, additionalHeaders: [String: String]?, queries: [URLQueryItem]?, httpBodyOverride httpBody: Data?, timeoutInterval: TimeInterval?, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy) async throws -> T
+	
 	/// Sends a POST request and returns the specified value type from the given API.
 	///
 	///	- Note: `additionalHeaders` will override a key-value in `additionalHTTPHeaders`.
