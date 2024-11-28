@@ -46,7 +46,7 @@ public protocol ServerAPI: Identifiable, Equatable {
 	func request(_ method: HTTPMethod, in environment: ServerEnvironment?, additionalHeaders: [String: String]?, additionalQueries: [URLQueryItem]?, httpBodyOverride httpBody: Data?, timeoutInterval: TimeInterval?) throws -> URLRequest
 	
 	/// Whether or not the provided type is supported by the API. Defaults to checking if the type is found in `supportedReturnObjects` or returning `false` if not found.
-	func supports<T: Codable>(_ object: T.Type) -> Bool
+	func supports<T: Decodable>(_ object: T.Type) -> Bool
 }
 
 extension Sequence where Element == Codable.Type {
@@ -96,7 +96,7 @@ public extension ServerAPI {
 	
 	var strictEnvironmentEnforcement: Bool { true }
 	
-	func supports<T: Codable>(_ object: T.Type) -> Bool {
+	func supports<T: Decodable>(_ object: T.Type) -> Bool {
 		return self.supportedReturnObjects?.contains(where: { object == $0 }) ?? false
 	}
 }
