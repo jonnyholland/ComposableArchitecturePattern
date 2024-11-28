@@ -37,6 +37,7 @@ public protocol ServerAPI: Identifiable, Equatable {
 	
 	/// The timeout length for the request. Default is `60`.
 	var timeoutInterval: TimeInterval { get set }
+	
 	/// Whether to block this API if the server is attempting to use a different environment.
 	///
 	/// For example, perhaps the server is using a specific environment but this API uses a different environment for some other purpose, such as a specific authentication endpoint. Setting this to `true` would mean that the API will throw an error if the environments don't match up.
@@ -128,9 +129,12 @@ public extension ServerAPI {
 			urlComponents?.queryItems = queries
 		}
 		
-		var request = URLRequest(url: urlComponents?.url ?? baseURL,
-								 cachePolicy: .useProtocolCachePolicy,
-								 timeoutInterval: timeoutInterval ?? self.timeoutInterval)
+		var request = URLRequest(
+			url: urlComponents?.url ?? baseURL,
+			cachePolicy: .useProtocolCachePolicy,
+			timeoutInterval: timeoutInterval ?? self.timeoutInterval
+		)
+		
 		request.allHTTPHeaderFields = self.headers
 		if let additionalHeaders {
 			additionalHeaders.forEach {
