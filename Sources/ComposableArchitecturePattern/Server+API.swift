@@ -94,6 +94,8 @@ public extension ServerAPI {
 	
 	var timeoutInterval: TimeInterval { 60 }
 	
+	var strictEnvironmentEnforcement: Bool { true }
+	
 	func supports<T: Codable>(_ object: T.Type) -> Bool {
 		return self.supportedReturnObjects?.contains(where: { object == $0 }) ?? false
 	}
