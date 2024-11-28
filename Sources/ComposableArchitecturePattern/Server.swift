@@ -40,8 +40,12 @@ public protocol Server: Actor {
 	/// The logger to use with communicating server activity.
 	var logger: Logger { get }
 	
+	/// The `URLSession` to use for all server calls.
+	var urlSession: URLSession { get }
+	
 	/// Designated initializer
 	init(
+		urlSession: URLSession,
 		environments: [ServerEnvironment],
 		currentEnvironment: ServerEnvironment?,
 		additionalHTTPHeaders: [String: String]?,
@@ -109,6 +113,10 @@ public extension Server {
 	
 	var loggers: Logger {
 		return Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.Coordinator", category: String(describing: Self.self))
+	}
+	
+	var urlSession: URLSession {
+		URLSession.shared
 	}
 	
 	// GETs
@@ -341,7 +349,7 @@ public extension Server {
 			self.logger.info("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) [Start]")
 		}
 		
-		let (data, response) = try await URLSession.shared.data(for: request)
+		let (data, response) = try await self.urlSession.data(for: request)
 		
 		self.requestsBeingProcessed.remove(requestUID)
 		
@@ -371,7 +379,7 @@ public extension Server {
 			logger.info("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) [Start]")
 		}
 		
-		let (_, response) = try await URLSession.shared.data(for: request)
+		let (_, response) = try await self.urlSession.data(for: request)
 		
 		self.requestsBeingProcessed.remove(requestUID)
 		
