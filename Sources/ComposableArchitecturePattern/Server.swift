@@ -420,7 +420,7 @@ public extension Server {
 		guard let additionalHeaders else {
 			return self.additionalHTTPHeaders
 		}
-		guard var additionalHTTPHeaders else {
+		guard let additionalHTTPHeaders else {
 			return additionalHeaders
 		}
 		
