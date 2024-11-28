@@ -7,14 +7,35 @@
 
 import Foundation
 
+/// An object that specifies a specific server API.
+///
+/// - Note: It is highly encouraged to define your `supportedReturnObjects` to ensure `-supports<T: Codable>(_:)` is able to automatically verify against this.
 public protocol ServerAPI: Identifiable, Equatable {
+	/// The environment this API should be used against. Default is `nil`.
+	/// - Note: If it can be used against any environment, leave it `nil`.
 	var environment: ServerEnvironment? { get set }
+	
+	/// The path this API corresponds to.
 	var path: String { get set }
+	
+	/// The headers required for this API. Default is `nil`.
 	var headers: [String: String]? { get set }
+	
+	/// The queries required for this API. Default is `nil`.
 	var queries: [URLQueryItem]? { get set }
+	
+	/// Data to send in the request's body.
 	var body: Data? { get set }
+	
+	/// All HTTP methods this API supports.
 	var supportedHTTPMethods: [HTTPMethod] { get set }
+	
+	/// All the return objects this API supports. Default is `nil`.
+	///
+	/// This helps ensure a non-supported object isn't attempted to be used with the API.
 	var supportedReturnObjects: [Codable.Type]? { get set }
+	
+	/// The timeout length for the request. Default is `60`.
 	var timeoutInterval: TimeInterval { get set }
 	/// Whether to block this API if the server is attempting to use a different environment.
 	///
