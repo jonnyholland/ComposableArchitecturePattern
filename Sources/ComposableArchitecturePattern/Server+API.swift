@@ -9,7 +9,7 @@ import Foundation
 
 /// An object that specifies a specific server API.
 ///
-/// - Note: It is highly encouraged to define your `supportedReturnObjects` to ensure `-supports<T: Codable>(_:)` is able to automatically verify against this.
+/// - Note: It is highly encouraged to define your `supportedReturnObjects` to ensure `-supports<T: Decodable>(_:)` is able to automatically verify against this.
 public protocol ServerAPI: Identifiable, Equatable {
 	/// The environment this API should be used against. Default is `nil`.
 	/// - Note: If it can be used against any environment, leave it `nil`.
@@ -33,7 +33,7 @@ public protocol ServerAPI: Identifiable, Equatable {
 	/// All the return objects this API supports. Default is `nil`.
 	///
 	/// This helps ensure a non-supported object isn't attempted to be used with the API.
-	var supportedReturnObjects: [Codable.Type]? { get }
+	var supportedReturnObjects: [Decodable.Type]? { get }
 	
 	/// The timeout length for the request. Default is `60`.
 	var timeoutInterval: TimeInterval { get }
@@ -49,8 +49,9 @@ public protocol ServerAPI: Identifiable, Equatable {
 	func supports<T: Decodable>(_ object: T.Type) -> Bool
 }
 
-extension Sequence where Element == Codable.Type {
-	func isEqual(to other: [Codable.Type]) -> Bool {
+extension Sequence where Element == Decodable.Type {
+	/// Whether the given collection of decodable types is equal to this collection of decodable types.
+	func isEqual(to other: [Decodable.Type]) -> Bool {
 		self.contains(where: { type in other.contains(where: { $0 == type }) })
 	}
 }
@@ -90,7 +91,7 @@ public extension ServerAPI {
 	
 	var body: Data? { nil }
 	
-	var supportedReturnObjects: [Codable.Type]? { nil }
+	var supportedReturnObjects: [Decodable.Type]? { nil }
 	
 	var timeoutInterval: TimeInterval { 60 }
 	
