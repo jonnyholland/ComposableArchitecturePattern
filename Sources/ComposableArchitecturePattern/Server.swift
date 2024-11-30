@@ -47,48 +47,48 @@ public protocol Server: Actor {
 	///
 	///	- Note: `additionalHeaders` will override a key-value in `additionalHTTPHeaders`.
 	/// - Note: The server automatically checks against these values to check whether they're supported by the API or not. For instance, if the specified return type is not supported, a `ServerAPIError.badRequest` error is thrown. If the specified API doesn't support this function, a `ServerAPIError.badRequest` error is thrown.
-	func get<T: Decodable>(using api: any ServerAPI, to endpoint: String?, additionalHeaders: [String: String]?, queries: [URLQueryItem]?, httpBodyOverride httpBody: Data?, timeoutInterval: TimeInterval?, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy) async throws -> T
+	func get<T: Decodable>(using api: any ServerAPI, to endpoint: String?, additionalHeaders: [String: String]?, queries: [URLQueryItem]?, httpBodyOverride httpBody: Data?, timeoutInterval: TimeInterval?, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy?, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy?) async throws -> T
 	
 	/// Sends a POST request and returns the specified value type from the given API.
 	///
 	///	- Note: `additionalHeaders` will override a key-value in `additionalHTTPHeaders`.
 	/// - Note: The server automatically checks against these values to check whether they're supported by the API or not. For instance, if the specified return type is not supported, a `ServerAPIError.badRequest` error is thrown. If the specified API doesn't support this function, a `ServerAPIError.badRequest` error is thrown.
-	func post<T: Decodable>(using api: any ServerAPI, to endpoint: String?, additionalHeaders: [String: String]?, queries: [URLQueryItem]?, httpBodyOverride httpBody: Data?, timeoutInterval: TimeInterval?, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy) async throws -> T
+	func post<T: Decodable>(using api: any ServerAPI, to endpoint: String?, additionalHeaders: [String: String]?, queries: [URLQueryItem]?, httpBodyOverride httpBody: Data?, timeoutInterval: TimeInterval?, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy?, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy?) async throws -> T
 	
 	/// Sends a POST request and returns the specified value type from the given API.
 	///
 	///	- Note: `additionalHeaders` will override a key-value in `additionalHTTPHeaders`.
 	/// - Note: The server automatically checks against these values to check whether they're supported by the API or not. For instance, if the return type of `Bool` is not supported, a `ServerAPIError.badRequest` error is thrown. If the specified API doesn't support this function, a `ServerAPIError.badRequest` error is thrown.
-	func post(using api: any ServerAPI, to endpoint: String?, additionalHeaders: [String: String]?, queries: [URLQueryItem]?, httpBodyOverride httpBody: Data?, timeoutInterval: TimeInterval?, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy) async throws -> Bool
+	func post(using api: any ServerAPI, to endpoint: String?, additionalHeaders: [String: String]?, queries: [URLQueryItem]?, httpBodyOverride httpBody: Data?, timeoutInterval: TimeInterval?, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy?, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy?) async throws -> Bool
 	
 	/// Sends a PUT request and returns the specified value type from the given API.
 	///
 	///	- Note: `additionalHeaders` will override a key-value in `additionalHTTPHeaders`.
 	/// - Note: The server automatically checks against these values to check whether they're supported by the API or not. For instance, if the specified return type is not supported, a `ServerAPIError.badRequest` error is thrown. If the specified API doesn't support this function, a `ServerAPIError.badRequest` error is thrown.
-	func put<T: Decodable>(using api: any ServerAPI, to endpoint: String?, additionalHeaders: [String: String]?, queries: [URLQueryItem]?, httpBodyOverride httpBody: Data?, timeoutInterval: TimeInterval?, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy) async throws -> T
+	func put<T: Decodable>(using api: any ServerAPI, to endpoint: String?, additionalHeaders: [String: String]?, queries: [URLQueryItem]?, httpBodyOverride httpBody: Data?, timeoutInterval: TimeInterval?, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy?, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy?) async throws -> T
 	
 	/// Sends a PUT request and returns the specified value type from the given API.
 	///
 	///	- Note: `additionalHeaders` will override a key-value in `additionalHTTPHeaders`.
 	/// - Note: The server automatically checks against these values to check whether they're supported by the API or not. For instance, if the return type of `Bool` is not supported, a `ServerAPIError.badRequest` error is thrown. If the specified API doesn't support this function, a `ServerAPIError.badRequest` error is thrown.
-	func put(using api: any ServerAPI, to endpoint: String?, additionalHeaders: [String: String]?, queries: [URLQueryItem]?, httpBodyOverride httpBody: Data?, timeoutInterval: TimeInterval?, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy) async throws -> Bool
+	func put(using api: any ServerAPI, to endpoint: String?, additionalHeaders: [String: String]?, queries: [URLQueryItem]?, httpBodyOverride httpBody: Data?, timeoutInterval: TimeInterval?, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy?, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy?) async throws -> Bool
 	
 	/// Sends a DELETE request and returns the specified value type from the given API.
 	///
 	///	- Note: `additionalHeaders` will override a key-value in `additionalHTTPHeaders`.
 	/// - Note: The server automatically checks against these values to check whether they're supported by the API or not. For instance, if the specified return type is not supported, a `ServerAPIError.badRequest` error is thrown. If the specified API doesn't support this function, a `ServerAPIError.badRequest` error is thrown.
-	func delete<T: Decodable>(using api: any ServerAPI, to endpoint: String?, additionalHeaders: [String: String]?, queries: [URLQueryItem]?, httpBodyOverride httpBody: Data?, timeoutInterval: TimeInterval?, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy) async throws -> T
+	func delete<T: Decodable>(using api: any ServerAPI, to endpoint: String?, additionalHeaders: [String: String]?, queries: [URLQueryItem]?, httpBodyOverride httpBody: Data?, timeoutInterval: TimeInterval?, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy?, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy?) async throws -> T
 	
 	/// Sends a DELETE request and returns the specified value type from the given API.
 	///
 	///	- Note: `additionalHeaders` will override a key-value in `additionalHTTPHeaders`.
 	/// - Note: The server automatically checks against these values to check whether they're supported by the API or not. For instance, if the return type of `Bool` is not supported, a `ServerAPIError.badRequest` error is thrown. If the specified API doesn't support this function, a `ServerAPIError.badRequest` error is thrown.
-	func delete(using api: any ServerAPI, to endpoint: String?, additionalHeaders: [String: String]?, queries: [URLQueryItem]?, httpBodyOverride httpBody: Data?, timeoutInterval: TimeInterval?, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy) async throws -> Bool
+	func delete(using api: any ServerAPI, to endpoint: String?, additionalHeaders: [String: String]?, queries: [URLQueryItem]?, httpBodyOverride httpBody: Data?, timeoutInterval: TimeInterval?, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy?, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy?) async throws -> Bool
 	
 	/// Send the given request to the server and return the decoded object.
 	/// - Returns: The given decoded type or an `APIError`.
 	/// - Throws: A `ServerAPIError` if unable to decode or an error encountered during the request.
-	func sendRequest<T: Decodable>(_ request: URLRequest, requestUID: UUID, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy) async throws -> T
+	func sendRequest<T: Decodable>(_ request: URLRequest, requestUID: UUID, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy?, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy?) async throws -> T
 	
 	/// Send the given request to the server.
 	/// - Returns: A boolean indicating the success of the request.
@@ -116,7 +116,7 @@ public extension Server {
 	var blockAllAPIsNotSupported: Bool { true }
 	
 	// GETs
-	func get<T: Decodable>(using api: any ServerAPI, to endpoint: String? = nil, additionalHeaders: [String: String]? = nil, queries: [URLQueryItem]? = nil, httpBodyOverride httpBody: Data? = nil, timeoutInterval: TimeInterval? = nil, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy = .iso8601, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy = .useDefaultKeys) async throws -> T {
+	func get<T: Decodable>(using api: any ServerAPI, to endpoint: String? = nil, additionalHeaders: [String: String]? = nil, queries: [URLQueryItem]? = nil, httpBodyOverride httpBody: Data? = nil, timeoutInterval: TimeInterval? = nil, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy? = nil, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy? = nil) async throws -> T {
 		if self.blockAllAPIsNotSupported {
 			try self._checkAPIsContainAPI(api)
 			
@@ -150,7 +150,7 @@ public extension Server {
 	}
 	
 	// POSTs
-	func post<T: Decodable>(using api: any ServerAPI, to endpoint: String? = nil, additionalHeaders: [String: String]? = nil, queries: [URLQueryItem]? = nil, httpBodyOverride httpBody: Data? = nil, timeoutInterval: TimeInterval? = nil, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy = .iso8601, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy = .useDefaultKeys) async throws -> T {
+	func post<T: Decodable>(using api: any ServerAPI, to endpoint: String? = nil, additionalHeaders: [String: String]? = nil, queries: [URLQueryItem]? = nil, httpBodyOverride httpBody: Data? = nil, timeoutInterval: TimeInterval? = nil, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy? = nil, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy? = nil) async throws -> T {
 		if self.blockAllAPIsNotSupported {
 			try self._checkAPIsContainAPI(api)
 			
@@ -182,7 +182,7 @@ public extension Server {
 		return decoded
 	}
 	
-	func post(using api: any ServerAPI, to endpoint: String? = nil, additionalHeaders: [String: String]? = nil, queries: [URLQueryItem]? = nil, httpBodyOverride httpBody: Data? = nil, timeoutInterval: TimeInterval? = nil, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy = .iso8601, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy = .useDefaultKeys) async throws -> Bool {
+	func post(using api: any ServerAPI, to endpoint: String? = nil, additionalHeaders: [String: String]? = nil, queries: [URLQueryItem]? = nil, httpBodyOverride httpBody: Data? = nil, timeoutInterval: TimeInterval? = nil, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy? = nil, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy? = nil) async throws -> Bool {
 		if self.blockAllAPIsNotSupported {
 			try self._checkAPIsContainAPI(api)
 		}
@@ -213,7 +213,7 @@ public extension Server {
 	}
 	
 	// PUTs
-	func put<T: Decodable>(using api: any ServerAPI, to endpoint: String? = nil, additionalHeaders: [String: String]? = nil, queries: [URLQueryItem]? = nil, httpBodyOverride httpBody: Data? = nil, timeoutInterval: TimeInterval? = nil, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy = .iso8601, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy = .useDefaultKeys) async throws -> T {
+	func put<T: Decodable>(using api: any ServerAPI, to endpoint: String? = nil, additionalHeaders: [String: String]? = nil, queries: [URLQueryItem]? = nil, httpBodyOverride httpBody: Data? = nil, timeoutInterval: TimeInterval? = nil, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy? = nil, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy? = nil) async throws -> T {
 		if self.blockAllAPIsNotSupported {
 			try self._checkAPIsContainAPI(api)
 			
@@ -246,7 +246,7 @@ public extension Server {
 		return decoded
 	}
 	
-	func put(using api: any ServerAPI, to endpoint: String? = nil, additionalHeaders: [String: String]? = nil, queries: [URLQueryItem]? = nil, httpBodyOverride httpBody: Data? = nil, timeoutInterval: TimeInterval? = nil, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy = .iso8601, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy = .useDefaultKeys) async throws -> Bool {
+	func put(using api: any ServerAPI, to endpoint: String? = nil, additionalHeaders: [String: String]? = nil, queries: [URLQueryItem]? = nil, httpBodyOverride httpBody: Data? = nil, timeoutInterval: TimeInterval? = nil, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy? = nil, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy? = nil) async throws -> Bool {
 		if self.blockAllAPIsNotSupported {
 			try self._checkAPIsContainAPI(api)
 		}
@@ -278,7 +278,7 @@ public extension Server {
 	}
 	
 	// DELETEs
-	func delete<T: Decodable>(using api: any ServerAPI, to endpoint: String? = nil, additionalHeaders: [String: String]? = nil, queries: [URLQueryItem]? = nil, httpBodyOverride httpBody: Data? = nil, timeoutInterval: TimeInterval? = nil, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy = .iso8601, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy = .useDefaultKeys) async throws -> T {
+	func delete<T: Decodable>(using api: any ServerAPI, to endpoint: String? = nil, additionalHeaders: [String: String]? = nil, queries: [URLQueryItem]? = nil, httpBodyOverride httpBody: Data? = nil, timeoutInterval: TimeInterval? = nil, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy? = nil, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy? = nil) async throws -> T {
 		if self.blockAllAPIsNotSupported {
 			try self._checkAPIsContainAPI(api)
 			
@@ -310,7 +310,7 @@ public extension Server {
 		return decoded
 	}
 	
-	func delete(using api: any ServerAPI, to endpoint: String? = nil, additionalHeaders: [String: String]? = nil, queries: [URLQueryItem]? = nil, httpBodyOverride httpBody: Data? = nil, timeoutInterval: TimeInterval? = nil, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy = .iso8601, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy = .useDefaultKeys) async throws -> Bool {
+	func delete(using api: any ServerAPI, to endpoint: String? = nil, additionalHeaders: [String: String]? = nil, queries: [URLQueryItem]? = nil, httpBodyOverride httpBody: Data? = nil, timeoutInterval: TimeInterval? = nil, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy? = nil, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy? = nil) async throws -> Bool {
 		if self.blockAllAPIsNotSupported {
 			try self._checkAPIsContainAPI(api)
 		}
@@ -340,7 +340,7 @@ public extension Server {
 		return wasSuccessful
 	}
 	
-	func sendRequest<T: Decodable>(_ request: URLRequest, requestUID: UUID, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy = .iso8601, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy = .useDefaultKeys) async throws -> T {
+	func sendRequest<T: Decodable>(_ request: URLRequest, requestUID: UUID, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy? = nil, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy? = nil) async throws -> T {
 		if self.logActivity == .all {
 			self.logger.info("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) [Start]")
 		}
@@ -423,15 +423,19 @@ public extension Server {
 }
 
 extension Server {
-	private func _decode<DecodableType: Decodable>(data: Data?, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy = .iso8601, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy = .useDefaultKeys) throws -> DecodableType {
+	private func _decode<DecodableType: Decodable>(data: Data?, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy? = nil , keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy? = nil) throws -> DecodableType {
 		guard let data else {
 			throw ServerAPIError.incorrectReponseData(description: NSLocalizedString("Unexpected empty response returned.", comment: ""))
 		}
 		
 		do {
 			let decoder = JSONDecoder()
-			decoder.dateDecodingStrategy = dateDecodingStrategy
-			decoder.keyDecodingStrategy = keyDecodingStrategy
+			if let dateDecodingStrategy {
+				decoder.dateDecodingStrategy = dateDecodingStrategy
+			}
+			if let keyDecodingStrategy {
+				decoder.keyDecodingStrategy = keyDecodingStrategy
+			}
 			
 			return try decoder.decode(DecodableType.self, from: data)
 		} catch let decodingError as DecodingError {
