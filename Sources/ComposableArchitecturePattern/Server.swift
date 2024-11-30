@@ -43,12 +43,6 @@ public protocol Server: Actor {
 	/// The `URLSession` to use for all server calls.
 	var urlSession: URLSession { get }
 	
-	/// Designated initializer
-	init(
-		environments: [ServerEnvironment],
-		supportedAPIs: [any ServerAPI]
-	)
-	
 	/// Sends a GET request and returns the specified value type from the given API.
 	///
 	///	- Note: `additionalHeaders` will override a key-value in `additionalHTTPHeaders`.
