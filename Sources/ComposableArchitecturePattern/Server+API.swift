@@ -43,6 +43,8 @@ public protocol ServerAPI: Identifiable, Equatable {
 	/// For example, perhaps the server is using a specific environment but this API uses a different environment for some other purpose, such as a specific authentication endpoint. Setting this to `true` would mean that the API will throw an error if the environments don't match up.
 	var strictEnvironmentEnforcement: Bool { get }
 	
+	/// The request for this API built from it's set properties and the passed in parameter values.
+	/// - Throws: A `ServerAPIError.badRequest` if the method or environment isn't supported or if there is no environment or environment url.
 	func request(_ method: HTTPMethod, at endpoint: String?, in environment: ServerEnvironment?, additionalHeaders: [String: String]?, additionalQueries: [URLQueryItem]?, httpBodyOverride httpBody: Data?, timeoutInterval: TimeInterval?) throws -> URLRequest
 	
 	/// Whether or not the provided type is supported by the API. Defaults to checking if the type is found in `supportedReturnObjects` or returning `false` if not found.
