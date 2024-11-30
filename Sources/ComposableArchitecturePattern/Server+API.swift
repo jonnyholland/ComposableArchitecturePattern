@@ -43,7 +43,7 @@ public protocol ServerAPI: Identifiable, Equatable {
 	/// For example, perhaps the server is using a specific environment but this API uses a different environment for some other purpose, such as a specific authentication endpoint. Setting this to `true` would mean that the API will throw an error if the environments don't match up.
 	var strictEnvironmentEnforcement: Bool { get }
 	
-	func request(_ method: HTTPMethod, in environment: ServerEnvironment?, additionalHeaders: [String: String]?, additionalQueries: [URLQueryItem]?, httpBodyOverride httpBody: Data?, timeoutInterval: TimeInterval?) throws -> URLRequest
+	func request(_ method: HTTPMethod, at endpoint: String?, in environment: ServerEnvironment?, additionalHeaders: [String: String]?, additionalQueries: [URLQueryItem]?, httpBodyOverride httpBody: Data?, timeoutInterval: TimeInterval?) throws -> URLRequest
 	
 	/// Whether or not the provided type is supported by the API. Defaults to checking if the type is found in `supportedReturnObjects` or returning `false` if not found.
 	func supports<T: Decodable>(_ object: T.Type) -> Bool
@@ -103,7 +103,7 @@ public extension ServerAPI {
 }
 
 public extension ServerAPI {
-	func request(_ httpMethod: HTTPMethod, in environment: ServerEnvironment? = nil, additionalHeaders: [String: String]? = nil, additionalQueries: [URLQueryItem]? = nil, httpBodyOverride httpBody: Data? = nil, timeoutInterval: TimeInterval? = nil) throws -> URLRequest {
+	func request(_ httpMethod: HTTPMethod, at endpoint: String? = nil, in environment: ServerEnvironment? = nil, additionalHeaders: [String: String]? = nil, additionalQueries: [URLQueryItem]? = nil, httpBodyOverride httpBody: Data? = nil, timeoutInterval: TimeInterval? = nil) throws -> URLRequest {
 		guard self.supportedHTTPMethods.contains(httpMethod) else {
 			throw ServerAPIError.badRequest(description: "\(httpMethod.rawValue) is not supported for this API.")
 		}
@@ -120,7 +120,7 @@ public extension ServerAPI {
 			throw ServerAPIError.badRequest(description: "Unable to resolve base URL for environment.")
 		}
 		
-		var urlComponents = URLComponents(url: baseURL.appendingPathComponent(self.path), resolvingAgainstBaseURL: true)
+		var urlComponents = URLComponents(url: baseURL.appending(path: self.path).appendingPathIfNotNil(endpoint), resolvingAgainstBaseURL: true)
 		
 		if let additionalQueries {
 			var combinedQueries = additionalQueries
