@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// An error encountered during server operation.
 public enum ServerAPIError: Error {
 	/// The API request is bad.
 	case badRequest(description: String? = nil, error: Error? = nil)
@@ -14,6 +15,7 @@ public enum ServerAPIError: Error {
 	case emptyData(description: String? = nil)
 	/// The wrong data returned in response.
 	case incorrectReponseData(description: String? = nil)
+	/// A local error.
 	case local(description: String? = nil, error: Error? = nil)
 	/// An error occurred with the network.
 	case network(description: String? = nil)
