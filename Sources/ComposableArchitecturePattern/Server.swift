@@ -40,8 +40,10 @@ public protocol Server: Actor {
 	/// The logger to use with communicating server activity.
 	var logger: Logger { get }
 	
-	/// The `URLSession` to use for all server calls.
-	var urlSession: URLSession { get }
+	/// The courier for making URL requests.
+	///
+	/// By default it will use a shared instance of `DefaultCourier`.
+	var courier: Courier { get }
 	
 	/// Sends a GET request and returns the specified value type from the given API.
 	///
@@ -84,16 +86,6 @@ public protocol Server: Actor {
 	///	- Note: `additionalHeaders` will override a key-value in `additionalHTTPHeaders`.
 	/// - Note: The server automatically checks against these values to check whether they're supported by the API or not. For instance, if the return type of `Bool` is not supported, a `ServerAPIError.badRequest` error is thrown. If the specified API doesn't support this function, a `ServerAPIError.badRequest` error is thrown.
 	func delete(using api: any ServerAPI, to endpoint: String?, additionalHeaders: [String: String]?, queries: [URLQueryItem]?, httpBodyOverride httpBody: Data?, timeoutInterval: TimeInterval?, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy?, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy?) async throws -> Bool
-	
-	/// Send the given request to the server and return the decoded object.
-	/// - Returns: The given decoded type or an `APIError`.
-	/// - Throws: A `ServerAPIError` if unable to decode or an error encountered during the request.
-	func sendRequest<T: Decodable>(_ request: URLRequest, requestUID: UUID, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy?, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy?) async throws -> T
-	
-	/// Send the given request to the server.
-	/// - Returns: A boolean indicating the success of the request.
-	/// - Throws: A `ServerAPIError` if unable to decode or an error encountered during the request.
-	func sendRequest(_ request: URLRequest, requestUID: UUID) async throws -> Bool
 }
 
 public extension Server {
@@ -105,9 +97,7 @@ public extension Server {
 		return Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.Server", category: String(describing: Self.self))
 	}
 	
-	var urlSession: URLSession {
-		URLSession.shared
-	}
+	var courier: Courier { DefaultCourier.shared }
 	
 	var currentEnvironment: ServerEnvironment? { nil }
 	
@@ -341,26 +331,9 @@ public extension Server {
 	}
 	
 	func sendRequest<T: Decodable>(_ request: URLRequest, requestUID: UUID, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy? = nil, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy? = nil) async throws -> T {
-		if self.logActivity == .all {
-			self.logger.info("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) [Start]")
-		}
-		
-		let (data, response) = try await self.urlSession.data(for: request)
+		let data = try await self.courier.sendRequest(request, requestUID: requestUID)
 		
 		self.requestsBeingProcessed.remove(requestUID)
-		
-		if self.logActivity == .all {
-			self.logger.info("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) [Finish]")
-		}
-		
-		guard try response.analyzeAsHTTPResponse() else {
-			self.logger.error("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) { Failed }")
-			throw ServerAPIError.unknown(description: "Unable to complete server response.")
-		}
-		
-		if self.logActivity == .all {
-			self.logger.info("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) { Success }")
-		}
 		
 		guard let data: T = try self._decode(data: data, dateDecodingStrategy: dateDecodingStrategy, keyDecodingStrategy: keyDecodingStrategy) else {
 			throw ServerAPIError.unableToDecode(description: NSLocalizedString("Unable to decode object", comment: ""), error: nil)
@@ -371,26 +344,9 @@ public extension Server {
 	/// Send the given request to the server and return the result.
 	/// - Returns: A result with `Void` or an `APIError`.
 	func sendRequest(_ request: URLRequest, requestUID: UUID) async throws -> Bool {
-		if self.logActivity == .all {
-			logger.info("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) [Start]")
-		}
-		
-		let (_, response) = try await self.urlSession.data(for: request)
+		let _ = try await self.courier.sendRequest(request, requestUID: requestUID)
 		
 		self.requestsBeingProcessed.remove(requestUID)
-		
-		if self.logActivity == .all {
-			logger.info("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) [Finish]")
-		}
-		
-		guard try response.analyzeAsHTTPResponse() else {
-			logger.error("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) { Failed }")
-			throw ServerAPIError.unknown(description: "Unable to complete server response.")
-		}
-		
-		if self.logActivity == .all {
-			logger.info("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) { Success }")
-		}
 		
 		return true
 	}
