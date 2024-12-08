@@ -94,7 +94,7 @@ public extension Server {
 	}
 	
 	var logger: Logger {
-		return Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.Server", category: String(describing: Self.self))
+		return Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.CAP.Server", category: String(describing: Self.self))
 	}
 	
 	var courier: Courier { DefaultCourier.shared }
