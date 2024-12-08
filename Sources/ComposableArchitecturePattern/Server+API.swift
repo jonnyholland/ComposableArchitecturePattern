@@ -110,7 +110,7 @@ public extension ServerAPI {
 			throw ServerAPIError.badRequest(description: "\(httpMethod.rawValue) is not supported for this API.")
 		}
 		if self.strictEnvironmentEnforcement, (self.environment != nil && environment != self.environment) {
-			throw ServerAPIError.badRequest(description: "API (\(self.id)) requires to use environment: \(self.environment?.description ?? "Unknown environment")")
+			throw ServerAPIError.badRequest(description: "API (\(self.id)) requires to use environment: (\(self.environment?.description ?? "Unknown environment")) but instead (\(environment?.description ?? "Unknown environment")) was used.")
 		}
 		
 		let environment = self.environment ?? environment
