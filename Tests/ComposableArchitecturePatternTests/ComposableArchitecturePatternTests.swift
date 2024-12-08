@@ -40,4 +40,11 @@ final class ComposableArchitecturePatternTests: XCTestCase {
 		let sut2 = MockServerAPI2()
 		XCTAssertTrue(sut2.supports(MockResponse2.self))
 	}
+	
+	func testServerAPIRequest() throws {
+		let sut = MockServerAPI1()
+		XCTAssertNoThrow(try sut.request(.GET))
+		// `MockServerAPI1` only supports `GET`.
+		XCTAssertThrowsError(try sut.request(.PUT))
+	}
 }
