@@ -29,7 +29,11 @@ let package = Package(
         .testTarget(
             name: "ComposableArchitecturePatternTests",
             dependencies: [
-            ]
+				"ComposableArchitecturePattern",
+			],
+			resources: [
+				.process("Mock/JSON")
+			]
         ),
     ]
 )
