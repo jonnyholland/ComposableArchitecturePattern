@@ -139,6 +139,20 @@ public extension Server {
 		return decoded
 	}
 	
+	/// Sends a GET request and returns the specified value type based on the specified path.
+	///
+	/// The default implementation attempts to find and unwrap the first api that supports `path`,  `GET` http method, `currentEnvironment` (if the API's environment is specified), and supports the return type. If none are found, it throws a `ServerAPIError.badRequest`. If an api is found, it gets unwrapped and then this calls `-get(using:, to:, additionalHeaders:, queries:, httpBodyOverride:, timeoutInterval:, dataDecodingStrategry:, keyDecodingStrategy:)`.
+	///
+	///	- Note: `additionalHeaders` will override a key-value in `additionalHTTPHeaders`.
+	/// - Note: The server automatically checks against these values to check whether they're supported by the API or not. For instance, if the specified return type is not supported, a `ServerAPIError.badRequest` error is thrown. If the specified API doesn't support this function, a `ServerAPIError.badRequest` error is thrown.
+	func get<T: Decodable>(path: String, endpoint: String?, additionalHeaders: [String: String]?, queries: [URLQueryItem]?, httpBodyOverride httpBody: Data?, timeoutInterval: TimeInterval?, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy?, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy?) async throws -> T {
+		guard let api = self.apis.first(where: { $0.path == path && $0.supportedHTTPMethods.contains(.GET) && ($0.environment != nil ? $0.environment == self.currentEnvironment : true) && $0.supports(T.self) }) else {
+			throw ServerAPIError.notImplemented(description: "No API found for \(path)")
+		}
+		
+		return try await self.get(using: api, to: endpoint, additionalHeaders: additionalHeaders, queries: queries, httpBodyOverride: httpBody, timeoutInterval: timeoutInterval, dateDecodingStrategy: dateDecodingStrategy, keyDecodingStrategy: keyDecodingStrategy)
+	}
+	
 	// POSTs
 	func post<T: Decodable>(using api: any ServerAPI, to endpoint: String? = nil, additionalHeaders: [String: String]? = nil, queries: [URLQueryItem]? = nil, httpBodyOverride httpBody: Data? = nil, timeoutInterval: TimeInterval? = nil, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy? = nil, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy? = nil) async throws -> T {
 		if self.blockAllAPIsNotSupported {
@@ -200,6 +214,20 @@ public extension Server {
 		}
 		
 		return wasSuccessful
+	}
+	
+	/// Sends a POST request and returns the specified value type based on the specified path.
+	///
+	/// The default implementation attempts to find and unwrap the first api that supports `path`,  `POST` http method, `currentEnvironment` (if the API's environment is specified), and supports the return type. If none are found, it throws a `ServerAPIError.badRequest`. If an api is found, it gets unwrapped and then this calls `-post(using:, to:, additionalHeaders:, queries:, httpBodyOverride:, timeoutInterval:, dataDecodingStrategry:, keyDecodingStrategy:)`.
+	///
+	///	- Note: `additionalHeaders` will override a key-value in `additionalHTTPHeaders`.
+	/// - Note: The server automatically checks against these values to check whether they're supported by the API or not. For instance, if the specified return type is not supported, a `ServerAPIError.badRequest` error is thrown. If the specified API doesn't support this function, a `ServerAPIError.badRequest` error is thrown.
+	func post<T: Decodable>(path: String, endpoint: String?, additionalHeaders: [String: String]?, queries: [URLQueryItem]?, httpBodyOverride httpBody: Data?, timeoutInterval: TimeInterval?, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy?, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy?) async throws -> T {
+		guard let api = self.apis.first(where: { $0.path == path && $0.supportedHTTPMethods.contains(.POST) && ($0.environment != nil ? $0.environment == self.currentEnvironment : true) && $0.supports(T.self) }) else {
+			throw ServerAPIError.notImplemented(description: "No API found for \(path)")
+		}
+		
+		return try await self.post(using: api, to: endpoint, additionalHeaders: additionalHeaders, queries: queries, httpBodyOverride: httpBody, timeoutInterval: timeoutInterval, dateDecodingStrategy: dateDecodingStrategy, keyDecodingStrategy: keyDecodingStrategy)
 	}
 	
 	// PUTs
@@ -267,6 +295,20 @@ public extension Server {
 		return wasSuccessful
 	}
 	
+	/// Sends a PUT request and returns the specified value type based on the specified path.
+	///
+	/// The default implementation attempts to find and unwrap the first api that supports `path`,  `PUT` http method, `currentEnvironment` (if the API's environment is specified), and supports the return type. If none are found, it throws a `ServerAPIError.badRequest`. If an api is found, it gets unwrapped and then this calls `-put(using:, to:, additionalHeaders:, queries:, httpBodyOverride:, timeoutInterval:, dataDecodingStrategry:, keyDecodingStrategy:)`.
+	///
+	///	- Note: `additionalHeaders` will override a key-value in `additionalHTTPHeaders`.
+	/// - Note: The server automatically checks against these values to check whether they're supported by the API or not. For instance, if the specified return type is not supported, a `ServerAPIError.badRequest` error is thrown. If the specified API doesn't support this function, a `ServerAPIError.badRequest` error is thrown.
+	func put<T: Decodable>(path: String, endpoint: String?, additionalHeaders: [String: String]?, queries: [URLQueryItem]?, httpBodyOverride httpBody: Data?, timeoutInterval: TimeInterval?, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy?, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy?) async throws -> T {
+		guard let api = self.apis.first(where: { $0.path == path && $0.supportedHTTPMethods.contains(.PUT) && ($0.environment != nil ? $0.environment == self.currentEnvironment : true) && $0.supports(T.self) }) else {
+			throw ServerAPIError.notImplemented(description: "No API found for \(path)")
+		}
+		
+		return try await self.put(using: api, to: endpoint, additionalHeaders: additionalHeaders, queries: queries, httpBodyOverride: httpBody, timeoutInterval: timeoutInterval, dateDecodingStrategy: dateDecodingStrategy, keyDecodingStrategy: keyDecodingStrategy)
+	}
+	
 	// DELETEs
 	func delete<T: Decodable>(using api: any ServerAPI, to endpoint: String? = nil, additionalHeaders: [String: String]? = nil, queries: [URLQueryItem]? = nil, httpBodyOverride httpBody: Data? = nil, timeoutInterval: TimeInterval? = nil, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy? = nil, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy? = nil) async throws -> T {
 		if self.blockAllAPIsNotSupported {
@@ -328,6 +370,20 @@ public extension Server {
 		}
 		
 		return wasSuccessful
+	}
+	
+	/// Sends a DELETE request and returns the specified value type based on the specified path.
+	///
+	/// The default implementation attempts to find and unwrap the first api that supports `path`,  `DELETE` http method, `currentEnvironment` (if the API's environment is specified), and supports the return type. If none are found, it throws a `ServerAPIError.badRequest`. If an api is found, it gets unwrapped and then this calls `-delete(using:, to:, additionalHeaders:, queries:, httpBodyOverride:, timeoutInterval:, dataDecodingStrategry:, keyDecodingStrategy:)`.
+	///
+	///	- Note: `additionalHeaders` will override a key-value in `additionalHTTPHeaders`.
+	/// - Note: The server automatically checks against these values to check whether they're supported by the API or not. For instance, if the specified return type is not supported, a `ServerAPIError.badRequest` error is thrown. If the specified API doesn't support this function, a `ServerAPIError.badRequest` error is thrown.
+	func delete<T: Decodable>(path: String, endpoint: String?, additionalHeaders: [String: String]?, queries: [URLQueryItem]?, httpBodyOverride httpBody: Data?, timeoutInterval: TimeInterval?, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy?, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy?) async throws -> T {
+		guard let api = self.apis.first(where: { $0.path == path && $0.supportedHTTPMethods.contains(.DELETE) && ($0.environment != nil ? $0.environment == self.currentEnvironment : true) && $0.supports(T.self) }) else {
+			throw ServerAPIError.notImplemented(description: "No API found for \(path)")
+		}
+		
+		return try await self.delete(using: api, to: endpoint, additionalHeaders: additionalHeaders, queries: queries, httpBodyOverride: httpBody, timeoutInterval: timeoutInterval, dateDecodingStrategy: dateDecodingStrategy, keyDecodingStrategy: keyDecodingStrategy)
 	}
 	
 	func sendRequest<T: Decodable>(_ request: URLRequest, requestUID: UUID, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy? = nil, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy? = nil) async throws -> T {
