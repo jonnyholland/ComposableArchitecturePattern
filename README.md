@@ -1,6 +1,6 @@
 # Composable Architecture Pattern (CAP)
 
-This package is designed to demonstrate how to build composable views and code so the views and code can be testable, scalable, and reusable. This also provides a library that's intended to very basic so you don't have to learn the library or use CAP as a framework but rather as a source you can dip into and use when you want or need to. A demos of how to use CAP can be found in [Demo Apps](#demo-apps).
+This package is designed to give you free code to make your projects, apps, and development more composable, testable, and scalable, as well as to demonstrate how to build composable views and code so the views and code can be testable, scalable, and reusable. This also provides a library that's intended to very basic so you don't have to learn the library or use CAP as a framework but rather as a source you can dip into and use when you want or need to. A demos of how to use CAP can be found in [Demo Apps](#demo-apps).
 
 Why CAP? Well, since I've been developing apps in SwiftUI since 2019, one thing had become very clear to me: there's really not a great way of architecting SwiftUI apps without using older, mostly irrelevant methodologies, such as MVVM. Additionally, I saw bad habits: large observable objects being passed around from view to view or worse yet each view getting an observable object when that's not really necessary. CAP is designed to fix this by giving general guidelines (protocols) to use to structure and guide your code. See demo apps for examples: [Demo Apps](#demo-apps).
 
