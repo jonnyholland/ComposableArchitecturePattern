@@ -12,7 +12,12 @@ You'll notice this is called a "pattern". This is because I believe software arc
 It would behoove you to read through [Core Principles](#core-principles) to fully understand the overall logic behind this architecture pattern. 
 
 ## Demo Apps
+- [NY Times News](https://github.com/jonnyholland/NY-Times-News/tree/main)
 - [Harvard Art Museum](https://github.com/jonnyholland/HarvardArt/tree/main)
+
+**Community-driven apps**
+- [Marvel](https://github.com/NathanRUbeda/Marvel) by Nathan Ubeda
+- [TwitchStream](https://github.com/NathanRUbeda/TwitchStream) by Nathan Ubeda
 
 ## Core Principles
 1. Composable. Each object and view should be composable, which means self-contained. So, we should avoid large complex views that are heavily dependent upon another view or on a specific object. Only give views what they need. It's imperative that your approach towards architecture be one of adapatability. I can't emphasize this enough: **Not all situations are the same. Not all situations require the exact same approach**. I have seen the mistake of forcing the same approach and same template for views in a SwiftUI app more times than I can count and this is a big mistake and, in my opinion, displays a lack of understanding how SwiftUI is designed to operate.
@@ -21,7 +26,69 @@ Instead, use the ever popular acronym: KISS (insert clip of Dwight telling Ryan 
 
 Therefore, you will need to look at each view from the perspective of "what's the minimal amount that needs to be here?". That's always easier said than done and easier in theory than practice. So, what I usually do when I'm unsure how to architect a view and understand it's needs and whether or not it needs to be reusable, etc: do whatever you need to get the view/feature working, then be a harsh critic and determine how to break down any views or features within the view and how to scope the work so it's clearly understandable by yourself and others later on.
 
-There's several ways we can accomplish this:
+2. Testability. Make sure your code is testable, actually functionally testable. This requires you to approach objects, views, and overall architure from the perspective of being able to easily test it.
+
+I would like to point out that testing your code is only going to get you so far. In fact, **testability should never come at the cost of stable features/views or eat up loads of development time**. As odd as it may seem, sometimes testability directly impacts quality because the code logic and architecture can become so fragmented that it becomes difficult to work with the code or reliably build out features without heavy/complex overhead or time unit testing simple/basic stuff.
+
+Remember, there's only so much you can test and there's always something you'll miss or the user will expose. The point here is to do your best but don't go overboard. For instance, testing objects returned from a web service is highly valuable and crucial. But, you shouldn't be creating complex objects to handle web service responses, outside of perahps some extreme circumstance. The goal should be to rely on built-in language features to your benefit and make the response objects as straightforward as possible so you don't have to eat up precious development time on tests for a custom decoder/encoder to figure out why it's failing. 
+
+If you lay the groundwork for and shape your mind towards testability, you'll find testing can be very easy and fun. Building a unit test will feel more rewarding and less like chess game or figuring out the right pieces to get it to work.
+
+3. Reliability. Architect your code, app, and views so it's reliable. This may seem like a simple thing to point out but it's surprising how often this gets lost in the thought of architecting solutions. This means, again, avoiding massive objects with complex code that's difficult to track things, understand, or scale.
+
+## Understanding and using CAP
+
+### Providers, Servers, APIs
+CAP's nomenclature is to use "server"s to define overall functionality specific to a server and "api"s for individual API's to be consumed or interacted with. The design here is to break up key elements of this mechanism so it's as clear as possible, while also being as testable as possible; meaning, we want this to scale easily while also being easy to work with. 
+
+I personally like the following architecture for networking: Provider: Protocol (consumed by a view, view model, or coordinator) > Server > API. This allows the consumer of the protocol to not care about how the provider is defining its implementation and the implementation of any server or api.
+
+```swift
+import ComposableArchitecturePattern
+
+protocol UserProvider {
+    func getUserInfo() async throws -> UserInfoResponse
+    func updateUserInfo(with request: UserInfoUpdate) async throws
+}
+
+struct UserInfoAPI: ServerAPI {
+    let id = UUID()
+    var environment: ServerEnvironment? = ServerAPIConstants.productionEnvironment
+    var path: String = "user/info"
+    var supportedHTTPMethods: [HTTPMethod] = [.GET, .PUT]
+    var supportedReturnObjects: [Decodable.Type]? = [UserInfoResponse.self]
+}
+
+actor CoreServer: Server {
+    static let userInfoAPI = UserInfoAPI()
+
+    var environments: [ServerEnvironment] = [ServerAPIConstants.productionEnvironment]
+    lazy var currentEnvironment: ServerEnvironment? = ServerAPIConstants.productionEnvironment
+    var requestsBeingProcessed = Set<UUID>()
+    var apis: [any ServerAPI] = [Self.userInfoAPI]
+
+    func getUserInfo() async throws -> UserInfoResponse {
+	return self.get(using: Self.userInfoAPI)
+    }
+    func updateUserInfo(with request: UserInfoUpdate) async throws {
+	return self.put(using: Self.userInfoAPI)
+    }
+}
+
+actor CoreUserProvider: UserProvider {
+    lazy var coreServer = CoreServer()
+
+    func getUserInfo() async throws -> UserInfoResponse {
+	return self.coreServer.getUserInfo()
+    }
+    func updateUserInfo(with request: UserInfoUpdate) async throws {
+	return self.coreServer.updateUserInfo()
+    }
+}
+```
+
+### Composability with views
+Making SwiftUI views composable is somewhat of an art. There's a few ways to accomplish this:
 
 a.) Protocols. This is a great way of isolating the view to whatever we define in the protocol so the view can be used anywhere that can conform and provide what the protocol entails.
 ```swift
@@ -177,15 +244,12 @@ struct UserCell: View {
 
 As you can see there's parts of this that could get repetitive, such as using class objects for each view.
 
-2. Testability. Make sure your code is testable, actually functionally testable. This requires you to approach objects, views, and overall architure from the perspective of being able to easily test it.
+## Great Community Examples
+Some of these examples may not specifically use CAP but demonstrate great composability in general. As I've said, there's several ways composability can be implemented and not everything needs to be the same. 
 
-I would like to point out that testing your code is only going to get you so far. In fact, **testability should never come at the cost of stable features/views or eat up loads of development time**. As odd as it may seem, sometimes testability directly impacts quality because the code logic and architecture can become so fragmented that it becomes difficult to work with the code or reliably build out features without heavy/complex overhead or time unit testing simple/basic stuff.
-
-Remember, there's only so much you can test and there's always something you'll miss or the user will expose. The point here is to do your best but don't go overboard. For instance, testing objects returned from a web service is highly valuable and crucial. But, you shouldn't be creating complex objects to handle web service responses, outside of perahps some extreme circumstance. The goal should be to rely on built-in language features to your benefit and make the response objects as straightforward as possible so you don't have to eat up precious development time on tests for a custom decoder/encoder to figure out why it's failing. 
-
-If you lay the groundwork for and shape your mind towards testability, you'll find testing can be very easy and fun. Building a unit test will feel more rewarding and less like chess game or figuring out the right pieces to get it to work.
-
-3. Reliability. Architect your code, app, and views so it's reliable. This may seem like a simple thing to point out but it's surprising how often this gets lost in the thought of architecting solutions. This means, again, avoiding massive objects with complex code that's difficult to track things, understand, or scale.
+- [Gallery App](https://github.com/area51/gallery-app) - Great example of composability using coordinators with real-life complexities. This project was influenced by the principles discussed in here when it was referred to as the Coordinator Pattern.
+- [MovieDatabase](https://github.com/NathanRUbeda/MovieDatabase) - Solid example of building composably and using many production-ready elements, such as web services.
+- [Pokedex](https://github.com/NathanRUbeda/Pokedex) - Solid example of building composably and using many production-ready elements, such as web services.
 
 ## References
 1. (Composability - Wikipedia)[https://en.wikipedia.org/wiki/Composability]
