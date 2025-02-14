@@ -1,5 +1,6 @@
 {
 	"name": "Steve Jobs",
 	"age": 30,
-	"city": "Cupertino"
+	"city": "Cupertino",
+	"email": "steve@apple.com"
 }
