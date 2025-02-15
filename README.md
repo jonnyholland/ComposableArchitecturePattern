@@ -87,6 +87,55 @@ actor CoreUserProvider: UserProvider {
 }
 ```
 
+### Using a coordinator
+Coordinators can be very helpful in making your code and logic solid, composable, and scalable. The coordinators can be as simple or complex as you need. Typically, you'll need a coordinator where the view or feature has complexities such as delegate callbacks or other transactions that must be completed as part of the feature or view.
+
+```swift
+@Observable
+final class AppCoordinator: Coordinator {
+	var state: CoordinatorState = .idle
+	
+	enum Actions {
+		case getPresets
+	}
+	
+	func perform(action: Actions) async throws {
+		switch action {
+			case .getPresets:
+				...
+		}
+	}
+}
+```
+
+A view coordinator can be great for integrating into legacy (UIKit/AppKit) projects that use legacy architectures, such as MVVM, MVC, or some mixture, as well as for just generally to make sure a complex feature view has easy coordination between networking, the model, and the view. 
+
+```swift
+@Observable
+final class FeatureDetailCoordinator: ViewCoordinator {
+	var state: CoordinatorState = .idle
+	var viewModel: FeatureDetailViewModel
+	
+	var view: some View {
+		SomeView(viewModel: self.viewModel)
+			.environment(\.error, self.viewModel.error)
+			// Add other environment properties and values…
+	}
+	
+	enum Actions {
+		case fetchDetails
+	}
+	
+	func perform(action: Actions) async throws {
+		switch action {
+			case .fetchDetails:
+				let details = self.provider.fetchDetails(for: id)
+				self.viewModel.update(from: details)
+		}
+	}
+}
+```
+
 ### Composability with views
 Making SwiftUI views composable is somewhat of an art. There's a few ways to accomplish this:
 
