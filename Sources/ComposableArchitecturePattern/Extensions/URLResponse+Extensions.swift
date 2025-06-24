@@ -21,7 +21,7 @@ public extension URLResponse {
 			case 400...499:
 				throw ServerAPIError.network(description: httpResponse.description)
 			case 500...599:
-				throw ServerAPIError.server(description: httpResponse.description, httpStatusCode: httpResponse.statusCode, jsonObject: nil)
+				throw ServerAPIError.server(description: httpResponse.description, httpStatusCode: httpResponse.statusCode)
 			default:
 				throw ServerAPIError.unknown(description: "Unknown HTTPURLResponse: \(httpResponse.description)")
 		}
