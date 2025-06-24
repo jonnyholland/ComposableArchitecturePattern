@@ -10,7 +10,7 @@ import Foundation
 /// An object that specifies a specific server API.
 ///
 /// - Note: It is highly encouraged to define your `supportedReturnObjects` to ensure `-supports<T: Decodable>(_:)` is able to automatically verify against this.
-public protocol ServerAPI: Identifiable, Equatable {
+public protocol ServerAPI: Identifiable, Equatable, Sendable {
 	/// The environment this API should be used against. Default is `nil`.
 	/// - Note: If it can be used against any environment, leave it `nil`.
 	var environment: ServerEnvironment? { get }
