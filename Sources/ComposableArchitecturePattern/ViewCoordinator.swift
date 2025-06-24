@@ -17,10 +17,15 @@ public protocol Coordinator {
 	/// Perform any necessary function to reload the coordinator.
 	func reload() async
 	
+	/// An enumeration of expected results
+	associatedtype Results
+	var statusStream: AsyncStream<CoordinatorStatus<Actions, Results>> { get }
+	
 	/// An enumeration of supported actions of the coordinator.
 	associatedtype Actions
 	/// Perform the specified enum action asynchronously.
-	func perform(action: Actions) async throws
+	@discardableResult
+	func perform(action: Actions) async throws -> Results
 }
 
 extension Coordinator {
@@ -51,6 +56,11 @@ public enum CoordinatorState: Equatable {
 	case needsReload
 	/// The coordinator is in an error state.
 	case error(error: Error? = nil, description: String? = nil)
+}
+
+public enum CoordinatorStatus<A, R> {
+	case actionHandled(action: A, result: R)
+	case stateUpdated(newState: CoordinatorState)
 }
 
 /// An object that coordinates between view, networking, or other logic
