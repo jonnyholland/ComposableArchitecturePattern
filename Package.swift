@@ -25,7 +25,6 @@ let package = Package(
 			name: "ComposableArchitecturePattern",
 			dependencies: []
 		),
-
         .testTarget(
             name: "ComposableArchitecturePatternTests",
             dependencies: [
