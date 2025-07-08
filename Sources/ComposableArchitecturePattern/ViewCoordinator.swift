@@ -19,6 +19,9 @@ public protocol Coordinator {
 	
 	/// An enumeration of expected results
 	associatedtype Results
+	/// A stream of current events corresponding to the coordinator's status.
+	///
+	/// This stream is useful to react to the coordinator's change in status, such as when the coordinator is finished loading or if the coordinator needs to reload.
 	var statusStream: AsyncStream<CoordinatorStatus<Actions, Results>> { get }
 	
 	/// An enumeration of supported actions of the coordinator.
@@ -70,7 +73,9 @@ public enum CoordinatorState: Equatable {
 }
 
 public enum CoordinatorStatus<A, R> {
+	/// The specified action was handled by the coordinator with the specified result. `result` is defaulted to `nil` because there may be scenarios where you don't want to expose the result of the action, such as when a coordinator may be handling sensitive data or data that is irrelevant outside the context of the coordinator.
 	case actionHandled(action: A, result: R? = nil)
+	/// The coordinator's state was updated to the specified new state.
 	case stateUpdated(newState: CoordinatorState)
 }
 
