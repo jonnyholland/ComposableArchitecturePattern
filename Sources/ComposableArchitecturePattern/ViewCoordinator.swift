@@ -17,15 +17,50 @@ public protocol Coordinator {
 	/// Perform any necessary function to reload the coordinator.
 	func reload() async
 	
+	/// An enumeration of expected results
+	associatedtype Results
+	/// A stream of current events corresponding to the coordinator's status.
+	///
+	/// This stream is useful to react to the coordinator's change in status, such as when the coordinator is finished loading or if the coordinator needs to reload.
+	var statusStream: AsyncStream<CoordinatorStatus<Actions, Results>> { get }
+	
 	/// An enumeration of supported actions of the coordinator.
 	associatedtype Actions
 	/// Perform the specified enum action asynchronously.
+	@available(*, deprecated, message: "This method has been deprecated. Use `perform(action:) -> Results` instead.")
 	func perform(action: Actions) async throws
+	
+	/// Perform the specified enum action asynchronously.
+	/// - Returns: The specified result.
+	@discardableResult
+	func perform(action: Actions) async throws -> Results
+	
+	/// An enumeration of actions to sync to.
+	associatedtype SyncActions
+	/// Sync the coordinator to the specified stream.
+	///
+	/// Use this if there is some action or function that is dependent upon some other coordinator's `statusStream` or some other asynchronous stream.
+	func sync(to stream: AsyncStream<SyncActions>)
 }
 
 extension Coordinator {
 	public func load() async {}
 	public func reload() async {}
+}
+
+public enum EmptyActions {}
+public enum EmptyResults {}
+
+extension Coordinator {
+	public var statusStream: AsyncStream<CoordinatorStatus<EmptyActions, EmptyResults>> {
+		AsyncStream { _ in }
+	}
+	
+	public func perform(action: EmptyActions) async throws -> EmptyResults {}
+	
+	public func peform(action: EmptyActions) async throws {}
+	
+	public func sync(to stream: AsyncStream<EmptyActions>) {}
 }
 
 /// The state of the coordinator.
@@ -51,6 +86,13 @@ public enum CoordinatorState: Equatable {
 	case needsReload
 	/// The coordinator is in an error state.
 	case error(error: Error? = nil, description: String? = nil)
+}
+
+public enum CoordinatorStatus<A, R> {
+	/// The specified action was handled by the coordinator with the specified result. `result` is defaulted to `nil` because there may be scenarios where you don't want to expose the result of the action, such as when a coordinator may be handling sensitive data or data that is irrelevant outside the context of the coordinator.
+	case actionHandled(action: A, result: R? = nil)
+	/// The coordinator's state was updated to the specified new state.
+	case stateUpdated(newState: CoordinatorState)
 }
 
 /// An object that coordinates between view, networking, or other logic
