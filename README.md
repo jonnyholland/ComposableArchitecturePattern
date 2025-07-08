@@ -59,11 +59,11 @@ struct UserInfoAPI: ServerAPI {
     var supportedReturnObjects: [Decodable.Type]? = [UserInfoResponse.self]
 }
 
-actor CoreServer: Server {
+actor UserNetworking: Server {
     static let userInfoAPI = UserInfoAPI()
 
     var environments: [ServerEnvironment] = [ServerAPIConstants.productionEnvironment]
-    lazy var currentEnvironment: ServerEnvironment? = ServerAPIConstants.productionEnvironment
+    var currentEnvironment: ServerEnvironment? = ServerAPIConstants.productionEnvironment
     var requestsBeingProcessed = Set<UUID>()
     var apis: [any ServerAPI] = [Self.userInfoAPI]
 
@@ -120,6 +120,11 @@ final class FeatureDetailCoordinator: ViewCoordinator {
 		SomeView(viewModel: self.viewModel)
 			.environment(\.error, self.viewModel.error)
 			// Add other environment properties and values…
+	}
+
+	func load() async throws {
+		// Perform any necessary network requests or logic necessary for coordinator operation, such as additional setup of `viewModel`.
+		self.state = .loaded
 	}
 	
 	enum Actions {
