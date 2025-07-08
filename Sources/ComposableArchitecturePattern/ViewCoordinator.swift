@@ -70,7 +70,7 @@ public enum CoordinatorState: Equatable {
 }
 
 public enum CoordinatorStatus<A, R> {
-	case actionHandled(action: A, result: R)
+	case actionHandled(action: A, result: R? = nil)
 	case stateUpdated(newState: CoordinatorState)
 }
 
