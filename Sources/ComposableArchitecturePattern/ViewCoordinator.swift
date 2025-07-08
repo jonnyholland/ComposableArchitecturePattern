@@ -29,6 +29,13 @@ public protocol Coordinator {
 	/// Perform the specified enum action asynchronously.
 	@discardableResult
 	func perform(action: Actions) async throws -> Results
+	
+	/// An enumeration of actions to sync to.
+	associatedtype SyncActions
+	/// Sync the coordinator to the specified stream.
+	///
+	/// Use this if there is some action or function that is dependent upon some other coordinator's `statusStream` or some other asynchronous stream.
+	func sync(to stream: AsyncStream<SyncActions>)
 }
 
 extension Coordinator {
@@ -45,6 +52,8 @@ extension Coordinator {
 	}
 	
 	public func perform(action: EmptyActions) async throws -> EmptyResults {}
+	
+	public func sync(to stream: AsyncStream<EmptyActions>) {}
 }
 
 /// The state of the coordinator.
