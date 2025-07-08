@@ -33,6 +33,17 @@ extension Coordinator {
 	public func reload() async {}
 }
 
+public enum EmptyActions {}
+public enum EmptyResults {}
+
+extension Coordinator {
+	public var statusStream: AsyncStream<CoordinatorStatus<EmptyActions, EmptyResults>> {
+		AsyncStream { _ in }
+	}
+	
+	public func perform(action: EmptyActions) async throws -> EmptyResults {}
+}
+
 /// The state of the coordinator.
 public enum CoordinatorState: Equatable {
 	public static func == (lhs: Self, rhs: Self) -> Bool {
