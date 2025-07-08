@@ -30,6 +30,10 @@ public protocol Coordinator {
 	@discardableResult
 	func perform(action: Actions) async throws -> Results
 	
+	/// Perform the specified enum action asynchronously.
+	@available(*, deprecated, message: "This method has been deprecated. Use `perform(action:) -> Results` instead.")
+	func perform(action: Actions) async throws
+	
 	/// An enumeration of actions to sync to.
 	associatedtype SyncActions
 	/// Sync the coordinator to the specified stream.
@@ -52,6 +56,8 @@ extension Coordinator {
 	}
 	
 	public func perform(action: EmptyActions) async throws -> EmptyResults {}
+	
+	public func peform(action: EmptyActions) async throws {}
 	
 	public func sync(to stream: AsyncStream<EmptyActions>) {}
 }
