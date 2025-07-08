@@ -16,7 +16,12 @@ let package = Package(
     products: [
 		.library(
 			name: "ComposableArchitecturePattern",
-			targets: ["ComposableArchitecturePattern"]),
+			targets: ["ComposableArchitecturePattern"]
+		),
+		.library(
+			name: "CAP",
+			targets: ["ComposableArchitecturePattern"]
+		),
     ],
     dependencies: [
     ],
