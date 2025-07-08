@@ -27,13 +27,13 @@ public protocol Coordinator {
 	/// An enumeration of supported actions of the coordinator.
 	associatedtype Actions
 	/// Perform the specified enum action asynchronously.
+	@available(*, deprecated, message: "This method has been deprecated. Use `perform(action:) -> Results` instead.")
+	func perform(action: Actions) async throws
+	
+	/// Perform the specified enum action asynchronously.
 	/// - Returns: The specified result.
 	@discardableResult
 	func perform(action: Actions) async throws -> Results
-	
-	/// Perform the specified enum action asynchronously.
-	@available(*, deprecated, message: "This method has been deprecated. Use `perform(action:) -> Results` instead.")
-	func perform(action: Actions) async throws
 	
 	/// An enumeration of actions to sync to.
 	associatedtype SyncActions
