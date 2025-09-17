@@ -9,7 +9,7 @@ import SwiftUI
 import OSLog
 
 /// The HTTP method type.
-public enum HTTPMethod: String, Equatable {
+public enum HTTPMethod: String, Equatable, Sendable {
 	case DELETE
 	case GET
 	case POST

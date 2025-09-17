@@ -8,7 +8,7 @@
 import Foundation
 
 /// A server environment with url path.
-public enum ServerEnvironment: Hashable, CustomStringConvertible {
+public enum ServerEnvironment: Hashable, CustomStringConvertible, Sendable, Equatable {
 	/// A development environment.
 	case development(url: String)
 	/// A local environment.
