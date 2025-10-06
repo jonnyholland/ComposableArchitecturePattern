@@ -47,9 +47,11 @@ public struct AsyncButton<Label: View>: View {
 	
 	public var body: some View {
 		Button {
+			let action = self.action
+			
 			if self.detachTask {
 				Task.detached {
-					await self.action()
+					await action()
 				}
 			} else {
 				self.state = .idle
