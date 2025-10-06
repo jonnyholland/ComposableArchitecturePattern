@@ -1,15 +1,16 @@
 # Composable Architecture Pattern (CAP)
 
-This package is designed to give you free code to make your projects, apps, and development more composable, testable, and scalable, as well as to demonstrate how to build composable views and code. The included library contains a robust collection of networking objects and patterns that's intended to help you get going quickly and confidently. A list demos showing how to use CAP can be found in [Demo Apps](#demo-apps) and a growing list of composable contributions can be found in [Great Community Examples](#great-community-examples).
+Build apps and design code in a self-sustainable and scalable way, no matter the current architecture. 
 
-Why CAP? Well, since I've been developing apps in SwiftUI since 2019, one thing had become very clear to me: there's really not a great way of architecting SwiftUI apps without using older, mostly irrelevant methodologies, such as MVVM. Additionally, I saw bad habits: large observable objects being passed around from view to view or worse yet each view getting an observable object when that's not really necessary. CAP is designed to fix this by giving general guidelines (protocols) to use to structure and guide your code. See demo apps for examples: [Demo Apps](#demo-apps).
-
-Composable means self-sustained<sup>1</sup>, which means each view should be able to sustain itself. In order to do that the view should have an approach that allows actions in the view to be testable. This means giving the view what it needs so it can be testable where objects, values, actions performed in the view can be tested in a straightfoward way. This also means architecting our code so we can have a separation of concerns so we're not passing around large view models or objects into each view. There's several ways this can be done and will be discussed below.
-
-You'll notice this is called a "pattern". This is because I believe software architecture always needs guidance but not always a library or framework. This approach allows you to make use of the architecture pattern and the library as you see fit. While being light and overall easy to use, writing good code takes time and effort and your goal should be to improve as a developer to architect safe code that hopefully is scalable and reusable.
+CAP allows you to get started quickly and build robust code. The idea is to use a coordinator between networking, the view, etc when absolutely necessary. When it's not necessary to use a coordinator, you can still use CAP for the library part of it to build strong stable code. To learn more about why I created this package, what composable means, and other stuf, check out [Learn more](#learn-more).
 
 ## Get Started
-It would behoove you to read through [Core Principles](#core-principles) to fully understand the overall logic behind this architecture pattern. 
+It would behoove you to read through [Core Principles](#core-principles) to fully understand the overall logic behind this architecture pattern.
+
+Add CAP as a dependency to your project:
+```
+.package(url: "https://github.com/jonnyholland/ComposableArchitecturePattern.git", from: "1.4.1")
+```
 
 ## Demo Apps
 - [NY Times News](https://github.com/jonnyholland/NY-Times-News/tree/main)
@@ -304,6 +305,16 @@ Some of these examples may not specifically use CAP but demonstrate great compos
 - [Gallery App](https://github.com/area51/gallery-app) - Great example of composability using coordinators with real-life complexities. This project was influenced by the principles discussed in here when it was referred to as the Coordinator Pattern.
 - [MovieDatabase](https://github.com/NathanRUbeda/MovieDatabase) - Solid example of building composably and using many production-ready elements, such as web services.
 - [Pokedex](https://github.com/NathanRUbeda/Pokedex) - Solid example of building composably and using many production-ready elements, such as web services.
+
+## Learn more
+
+This package is designed to give you free code to make your projects, apps, and development more composable, testable, and scalable, as well as to demonstrate how to build composable views and code. The included library contains a robust collection of networking objects and patterns that's intended to help you get going quickly and confidently. A list demos showing how to use CAP can be found in [Demo Apps](#demo-apps) and a growing list of composable contributions can be found in [Great Community Examples](#great-community-examples).
+
+Why CAP? Well, since I've been developing apps in SwiftUI since 2019, one thing had become very clear to me: there's really not a great way of architecting SwiftUI apps without using older, mostly irrelevant methodologies, such as MVVM. Additionally, I saw bad habits: large observable objects being passed around from view to view or worse yet each view getting an observable object when that's not really necessary. CAP is designed to fix this by giving general guidelines (protocols) to use to structure and guide your code. See demo apps for examples: [Demo Apps](#demo-apps).
+
+Composable means self-sustained<sup>1</sup>, which means each view should be able to sustain itself. In order to do that the view should have an approach that allows actions in the view to be testable. This means giving the view what it needs so it can be testable where objects, values, actions performed in the view can be tested in a straightfoward way. This also means architecting our code so we can have a separation of concerns so we're not passing around large view models or objects into each view. There's several ways this can be done and will be discussed below.
+
+You'll notice this is called a "pattern". This is because I believe software architecture always needs guidance but not always a library or framework. This approach allows you to make use of the architecture pattern and the library as you see fit. While being light and overall easy to use, writing good code takes time and effort and your goal should be to improve as a developer to architect safe code that hopefully is scalable and reusable.
 
 ## References
 1. (Composability - Wikipedia)[https://en.wikipedia.org/wiki/Composability]
