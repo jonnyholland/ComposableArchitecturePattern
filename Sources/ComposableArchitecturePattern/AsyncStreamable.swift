@@ -31,8 +31,9 @@ public actor AsyncStreamable<T: Sendable>: _AsyncStreamable {
 		self.value.wrappedValue = newValue
 	}
 	
-	/// A new stream on the underlying value.
-	public func stream() async -> AsyncStream<T> {
-		self.value.newStream()
+	/// A new stream on the underlying value, specifying any termination action to be performed during termination.
+	public func stream(withTerminationHandler: (@Sendable (AsyncStream<Value>.Continuation.Termination) -> Void)? = nil) async -> AsyncStream<T> {
+		self.value.newStream(withTerminationHandler: withTerminationHandler)
+	}
 	}
 }

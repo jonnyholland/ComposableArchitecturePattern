@@ -19,10 +19,11 @@
 	}
 	
 	/// A new stream for the underlying value.
-	public mutating func newStream() -> AsyncStream<Value> {
+	public mutating func newStream(withTerminationHandler: (@Sendable (AsyncStream<Value>.Continuation.Termination) -> Void)? = nil) -> AsyncStream<Value> {
 		AsyncStream { continuation in
 			self._streams.append(continuation)
 			continuation.yield(self.wrappedValue)
+			continuation.onTermination = withTerminationHandler
 		}
 	}
 	
