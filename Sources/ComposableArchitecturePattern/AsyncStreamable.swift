@@ -13,6 +13,8 @@ public protocol _AsyncStreamable {
 }
 
 /// An actor to handle streaming for a value.
+///
+/// This can be very useful because streams can only be consumed once at a time. This is a way around that as simply and efficiently as possible.
 public actor AsyncStreamable<T: Sendable>: _AsyncStreamable {
 	nonisolated(unsafe) public var value: AsyncStreamPublisher<T>
 	
