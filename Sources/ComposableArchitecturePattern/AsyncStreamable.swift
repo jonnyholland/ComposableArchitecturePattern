@@ -35,5 +35,9 @@ public actor AsyncStreamable<T: Sendable>: _AsyncStreamable {
 	public func stream(withTerminationHandler: (@Sendable (AsyncStream<Value>.Continuation.Termination) -> Void)? = nil) async -> AsyncStream<T> {
 		self.value.newStream(withTerminationHandler: withTerminationHandler)
 	}
+	
+	/// Shutsdown the stream by terminating the streams.
+	public func shutdown() {
+		self.value.shutdown()
 	}
 }

@@ -36,4 +36,11 @@
 			continuation.yield(value)
 		}
 	}
+	
+	/// Shutsdown the stream by terminating the streams.
+	public func shutdown() {
+		for continuation in self._streams {
+			continuation.finish()
+		}
+	}
 }
