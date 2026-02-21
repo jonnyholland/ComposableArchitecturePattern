@@ -97,9 +97,9 @@ public enum CoordinatorStatus<A, R> {
 
 /// An object that coordinates between view, networking, or other logic
 public protocol ViewCoordinator: Coordinator {
-	associatedtype ContentView: View
+	associatedtype ViewCoordinatorContentView: View
 	/// What the coordinator displays as its main content
-	var view: ContentView { get }
+	var view: ViewCoordinatorContentView { get }
 }
 
 @available(*, renamed: "CoordinatorState")
