@@ -13,11 +13,17 @@ import os
 
 /// An actor that couriers requests using `AsyncHTTPClient.HTTPClient`.
 public actor AsyncHTTPClientCourier: Courier {
+	/// A shared instance that can be used for couriering requests.
+	public static let shared = AsyncHTTPClientCourier()
+
 	/// The `HTTPClient` to use for all server calls.
 	public let client: HTTPClient
 
 	/// The timeout for each request.
 	public var timeout: TimeAmount
+
+	/// The maximum response body size in bytes. Defaults to 10MB.
+	public var maxResponseSize: Int
 
 	/// The logger to use with communicating server courier activity.
 	lazy var logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.CAP.AsyncHTTPClientCourier", category: String(describing: Self.self))
@@ -29,10 +35,12 @@ public actor AsyncHTTPClientCourier: Courier {
 	/// - Parameters:
 	///   - client: The `HTTPClient` to use for making requests.
 	///   - timeout: The timeout for each request. Defaults to 60 seconds.
+	///   - maxResponseSize: The maximum response body size in bytes. Defaults to 10MB.
 	///   - logActivity: The log activity to use for processing requests.
-	public init(client: HTTPClient = .shared, timeout: TimeAmount = .seconds(60), logActivity: LogActivity = .all) {
+	public init(client: HTTPClient = .shared, timeout: TimeAmount = .seconds(60), maxResponseSize: Int = 1024 * 1024 * 10, logActivity: LogActivity = .all) {
 		self.client = client
 		self.timeout = timeout
+		self.maxResponseSize = maxResponseSize
 		self.logActivity = logActivity
 	}
 
@@ -64,6 +72,8 @@ public actor AsyncHTTPClientCourier: Courier {
 			self.logger.info("\(Date()) - (\(requestUID)) Request to \(url.absoluteString) [Finish]")
 		}
 
+		let body = try await response.body.collect(upTo: self.maxResponseSize)
+		let data = Data(buffer: body)
 		let statusCode = Int(response.status.code)
 
 		switch statusCode {
@@ -81,9 +91,6 @@ public actor AsyncHTTPClientCourier: Courier {
 				self.logger.error("\(Date()) - (\(requestUID)) Request to \(url.absoluteString) { Failed: \(statusCode) }")
 				throw ServerAPIError.unknown(description: "Unknown HTTP status: \(statusCode)")
 		}
-
-		let body = try await response.body.collect(upTo: 1024 * 1024 * 10) // 10MB max
-		let data = Data(buffer: body)
 
 		if self.logActivity == .all {
 			self.logger.info("\(Date()) - (\(requestUID)) Request to \(url.absoluteString) { Success }")
