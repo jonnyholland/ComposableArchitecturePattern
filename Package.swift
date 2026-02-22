@@ -24,11 +24,14 @@ let package = Package(
 		),
     ],
     dependencies: [
+		.package(url: "https://github.com/swift-server/async-http-client.git", from: "1.24.0"),
     ],
     targets: [
 		.target(
 			name: "ComposableArchitecturePattern",
-			dependencies: []
+			dependencies: [
+				.product(name: "AsyncHTTPClient", package: "async-http-client", condition: .when(platforms: [.macOS, .linux])),
+			]
 		),
         .testTarget(
             name: "ComposableArchitecturePatternTests",
