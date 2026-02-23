@@ -21,47 +21,47 @@ public enum HTTPMethod: String, Equatable, Sendable {
 /// This is the equivalent of a web service. The idea is for this to be the base actor to handle all server interactions that correspond to the defined API's. This ensures API's can be scoped to specific servers, thus allowing you to scope feature support.
 public protocol Server: Actor {
 	/// Environments supported by this server.
-	var environments: [ServerEnvironment] { get }
+	var environments: [ServerEnvironment] { get set }
 	/// The current environment being used by this server to process requests.
-	var currentEnvironment: ServerEnvironment? { get }
+	var currentEnvironment: ServerEnvironment? { get set }
 	/// Additional headers that may be required/needed for interaction with this server.
-	var additionalHTTPHeaders: [String: String]? { get }
+	var additionalHTTPHeaders: [String: String]? { get set }
 	/// Whether or not to log all activity wtih this server.
-	var logActivity: LogActivity { get }
+	var logActivity: LogActivity { get set }
 
 	/// All the API's supported by the server.
-	var apis: [any ServerAPI] { get }
+	var apis: [any ServerAPI] { get set }
 
 	/// Flag to not all the server to send any request that is not explicitly defined in `apis`.
-	var blockAllAPIsNotSupported: Bool { get }
+	var blockAllAPIsNotSupported: Bool { get set }
 	/// All the requests currently being processed.
 	var requestsBeingProcessed: Set<UUID> { get set }
 
 	/// The logger to use with communicating server activity.
-	var logger: Logger { get }
+	var logger: Logger { get set }
 
 	/// The courier for making URL requests.
 	///
 	/// By default it will use a shared instance of `DefaultCourier`.
-	var courier: Courier { get }
+	var courier: Courier { get set }
 
 	/// An optional authenticator for injecting auth headers and handling 401 refresh.
-	var authenticator: (any Authenticator)? { get }
+	var authenticator: (any Authenticator)? { get set }
 
 	/// An optional retry policy for failed requests.
-	var retryPolicy: RetryPolicy? { get }
+	var retryPolicy: RetryPolicy? { get set }
 
 	/// Request interceptors applied before sending each request.
-	var requestInterceptors: [any RequestInterceptor] { get }
+	var requestInterceptors: [any RequestInterceptor] { get set }
 
 	/// Response interceptors applied after receiving each response.
-	var responseInterceptors: [any ResponseInterceptor] { get }
+	var responseInterceptors: [any ResponseInterceptor] { get set }
 
 	/// An optional response cache for caching GET responses.
-	var responseCache: (any ResponseCache)? { get }
+	var responseCache: (any ResponseCache)? { get set }
 
 	/// The default time-to-live for cached responses.
-	var cacheTTL: TimeInterval { get }
+	var cacheTTL: TimeInterval { get set }
 
 	/// Sends a GET request and returns the specified value type from the given API.
 	///
@@ -138,6 +138,42 @@ public extension Server {
 	var responseCache: (any ResponseCache)? { nil }
 
 	var cacheTTL: TimeInterval { 300 }
+	
+	func updateCurrentEnvironment(_ environment: ServerEnvironment?) async {
+		self.currentEnvironment = environment
+	}
+	
+	func updateEnvironments(_ environments: [ServerEnvironment]) async {
+		self.environments = environments
+	}
+	
+	func updateAdditionalHTTPHeaders(_ additionalHTTPHeaders: [String: String]?) async {
+		self.additionalHTTPHeaders = additionalHTTPHeaders
+	}
+	
+	func updateAPIs(_ apis: [any ServerAPI]) async {
+		self.apis = apis
+	}
+	
+	func updateAuthenticator(_ authenticator: (any Authenticator)?) async {
+		self.authenticator = authenticator
+	}
+	
+	func updateRetryPolicy(_ retryPolicy: RetryPolicy?) async {
+		self.retryPolicy = retryPolicy
+	}
+	
+	func updateRequestInterceptors(_ requestInterceptors: [any RequestInterceptor]) async {
+		self.requestInterceptors = requestInterceptors
+	}
+	
+	func updateResponseInterceptors(_ responseInterceptors: [any ResponseInterceptor]) async {
+		self.responseInterceptors = responseInterceptors
+	}
+	
+	func updateResponseCache(_ responseCache: (any ResponseCache)?) async {
+		self.responseCache = responseCache
+	}
 
 	// MARK: - GETs
 	func get<T: Decodable>(using api: any ServerAPI, to endpoint: String? = nil, additionalHeaders: [String: String]? = nil, queries: [URLQueryItem]? = nil, httpBodyOverride httpBody: Data? = nil, timeoutInterval: TimeInterval? = nil, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy? = nil, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy? = nil) async throws -> T {

@@ -13,35 +13,35 @@ import Foundation
 public protocol ServerAPI: Identifiable, Equatable, Sendable {
 	/// The environment this API should be used against. Default is `nil`.
 	/// - Note: If it can be used against any environment, leave it `nil`.
-	var environment: ServerEnvironment? { get }
+	var environment: ServerEnvironment? { get set }
 	
 	/// The path this API corresponds to.
-	var path: String { get }
+	var path: String { get set }
 	
 	/// The headers required for this API. Default is `nil`.
-	var headers: [String: String]? { get }
+	var headers: [String: String]? { get set }
 	
 	/// The queries required for this API. Default is `nil`.
-	var queries: [URLQueryItem]? { get }
+	var queries: [URLQueryItem]? { get set }
 	
 	/// Data to send in the request's body.
-	var body: Data? { get }
+	var body: Data? { get set }
 	
 	/// All HTTP methods this API supports.
-	var supportedHTTPMethods: [HTTPMethod] { get }
+	var supportedHTTPMethods: [HTTPMethod] { get set }
 	
 	/// All the return objects this API supports. Default is `nil`.
 	///
 	/// This helps ensure a non-supported object isn't attempted to be used with the API.
-	var supportedReturnObjects: [Decodable.Type]? { get }
+	var supportedReturnObjects: [Decodable.Type]? { get set }
 	
 	/// The timeout length for the request. Default is `60`.
-	var timeoutInterval: TimeInterval { get }
+	var timeoutInterval: TimeInterval { get set }
 	
 	/// Whether to block this API if the server is attempting to use a different environment.
 	///
 	/// For example, perhaps the server is using a specific environment but this API uses a different environment for some other purpose, such as a specific authentication endpoint. Setting this to `true` would mean that the API will throw an error if the environments don't match up.
-	var strictEnvironmentEnforcement: Bool { get }
+	var strictEnvironmentEnforcement: Bool { get set }
 	
 	/// The request for this API built from it's set properties and the passed in parameter values.
 	/// - Throws: A `ServerAPIError.badRequest` if the method or environment isn't supported or if there is no environment or environment url.
