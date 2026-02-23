@@ -17,6 +17,8 @@ public enum ServerAPIError: Error {
 	case incorrectReponseData(description: String? = nil)
 	/// A local error.
 	case local(description: String? = nil, error: Error? = nil)
+	/// The request was unauthorized (HTTP 401).
+	case unauthorized(description: String? = nil)
 	/// An error occurred with the network.
 	case network(description: String? = nil)
 	/// Functionality to complete the API request is incomplete.

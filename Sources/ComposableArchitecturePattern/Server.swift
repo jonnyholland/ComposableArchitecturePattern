@@ -28,59 +28,77 @@ public protocol Server: Actor {
 	var additionalHTTPHeaders: [String: String]? { get }
 	/// Whether or not to log all activity wtih this server.
 	var logActivity: LogActivity { get }
-	
+
 	/// All the API's supported by the server.
 	var apis: [any ServerAPI] { get }
-	
+
 	/// Flag to not all the server to send any request that is not explicitly defined in `apis`.
 	var blockAllAPIsNotSupported: Bool { get }
 	/// All the requests currently being processed.
 	var requestsBeingProcessed: Set<UUID> { get set }
-	
+
 	/// The logger to use with communicating server activity.
 	var logger: Logger { get }
-	
+
 	/// The courier for making URL requests.
 	///
 	/// By default it will use a shared instance of `DefaultCourier`.
 	var courier: Courier { get }
-	
+
+	/// An optional authenticator for injecting auth headers and handling 401 refresh.
+	var authenticator: (any Authenticator)? { get }
+
+	/// An optional retry policy for failed requests.
+	var retryPolicy: RetryPolicy? { get }
+
+	/// Request interceptors applied before sending each request.
+	var requestInterceptors: [any RequestInterceptor] { get }
+
+	/// Response interceptors applied after receiving each response.
+	var responseInterceptors: [any ResponseInterceptor] { get }
+
+	/// An optional response cache for caching GET responses.
+	var responseCache: (any ResponseCache)? { get }
+
+	/// The default time-to-live for cached responses.
+	var cacheTTL: TimeInterval { get }
+
 	/// Sends a GET request and returns the specified value type from the given API.
 	///
 	///	- Note: `additionalHeaders` will override a key-value in `additionalHTTPHeaders`.
 	/// - Note: The server automatically checks against these values to check whether they're supported by the API or not. For instance, if the specified return type is not supported, a `ServerAPIError.badRequest` error is thrown. If the specified API doesn't support this function, a `ServerAPIError.badRequest` error is thrown.
 	func get<T: Decodable>(using api: any ServerAPI, to endpoint: String?, additionalHeaders: [String: String]?, queries: [URLQueryItem]?, httpBodyOverride httpBody: Data?, timeoutInterval: TimeInterval?, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy?, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy?) async throws -> T
-	
+
 	/// Sends a POST request and returns the specified value type from the given API.
 	///
 	///	- Note: `additionalHeaders` will override a key-value in `additionalHTTPHeaders`.
 	/// - Note: The server automatically checks against these values to check whether they're supported by the API or not. For instance, if the specified return type is not supported, a `ServerAPIError.badRequest` error is thrown. If the specified API doesn't support this function, a `ServerAPIError.badRequest` error is thrown.
 	func post<T: Decodable>(using api: any ServerAPI, to endpoint: String?, additionalHeaders: [String: String]?, queries: [URLQueryItem]?, httpBodyOverride httpBody: Data?, timeoutInterval: TimeInterval?, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy?, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy?) async throws -> T
-	
+
 	/// Sends a POST request and returns the specified value type from the given API.
 	///
 	///	- Note: `additionalHeaders` will override a key-value in `additionalHTTPHeaders`.
 	/// - Note: The server automatically checks against these values to check whether they're supported by the API or not. For instance, if the return type of `Bool` is not supported, a `ServerAPIError.badRequest` error is thrown. If the specified API doesn't support this function, a `ServerAPIError.badRequest` error is thrown.
 	func post(using api: any ServerAPI, to endpoint: String?, additionalHeaders: [String: String]?, queries: [URLQueryItem]?, httpBodyOverride httpBody: Data?, timeoutInterval: TimeInterval?, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy?, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy?) async throws -> Bool
-	
+
 	/// Sends a PUT request and returns the specified value type from the given API.
 	///
 	///	- Note: `additionalHeaders` will override a key-value in `additionalHTTPHeaders`.
 	/// - Note: The server automatically checks against these values to check whether they're supported by the API or not. For instance, if the specified return type is not supported, a `ServerAPIError.badRequest` error is thrown. If the specified API doesn't support this function, a `ServerAPIError.badRequest` error is thrown.
 	func put<T: Decodable>(using api: any ServerAPI, to endpoint: String?, additionalHeaders: [String: String]?, queries: [URLQueryItem]?, httpBodyOverride httpBody: Data?, timeoutInterval: TimeInterval?, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy?, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy?) async throws -> T
-	
+
 	/// Sends a PUT request and returns the specified value type from the given API.
 	///
 	///	- Note: `additionalHeaders` will override a key-value in `additionalHTTPHeaders`.
 	/// - Note: The server automatically checks against these values to check whether they're supported by the API or not. For instance, if the return type of `Bool` is not supported, a `ServerAPIError.badRequest` error is thrown. If the specified API doesn't support this function, a `ServerAPIError.badRequest` error is thrown.
 	func put(using api: any ServerAPI, to endpoint: String?, additionalHeaders: [String: String]?, queries: [URLQueryItem]?, httpBodyOverride httpBody: Data?, timeoutInterval: TimeInterval?, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy?, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy?) async throws -> Bool
-	
+
 	/// Sends a DELETE request and returns the specified value type from the given API.
 	///
 	///	- Note: `additionalHeaders` will override a key-value in `additionalHTTPHeaders`.
 	/// - Note: The server automatically checks against these values to check whether they're supported by the API or not. For instance, if the specified return type is not supported, a `ServerAPIError.badRequest` error is thrown. If the specified API doesn't support this function, a `ServerAPIError.badRequest` error is thrown.
 	func delete<T: Decodable>(using api: any ServerAPI, to endpoint: String?, additionalHeaders: [String: String]?, queries: [URLQueryItem]?, httpBodyOverride httpBody: Data?, timeoutInterval: TimeInterval?, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy?, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy?) async throws -> T
-	
+
 	/// Sends a DELETE request and returns the specified value type from the given API.
 	///
 	///	- Note: `additionalHeaders` will override a key-value in `additionalHTTPHeaders`.
@@ -92,7 +110,7 @@ public extension Server {
 	var logActivity: LogActivity {
 		return .all
 	}
-	
+
 	var logger: Logger {
 		return Logger(label: "\(Bundle.main.bundleIdentifier ?? "com.CAP.Server").\(String(describing: Self.self))")
 	}
@@ -102,47 +120,59 @@ public extension Server {
 	#elseif canImport(AsyncHTTPClient)
 	var courier: Courier { AsyncHTTPClientCourier.shared }
 	#endif
-	
+
 	var currentEnvironment: ServerEnvironment? { nil }
-	
+
 	var additionalHTTPHeaders: [String: String]? { nil }
-	
+
 	var blockAllAPIsNotSupported: Bool { true }
-	
-	// GETs
+
+	var authenticator: (any Authenticator)? { nil }
+
+	var retryPolicy: RetryPolicy? { nil }
+
+	var requestInterceptors: [any RequestInterceptor] { [] }
+
+	var responseInterceptors: [any ResponseInterceptor] { [] }
+
+	var responseCache: (any ResponseCache)? { nil }
+
+	var cacheTTL: TimeInterval { 300 }
+
+	// MARK: - GETs
 	func get<T: Decodable>(using api: any ServerAPI, to endpoint: String? = nil, additionalHeaders: [String: String]? = nil, queries: [URLQueryItem]? = nil, httpBodyOverride httpBody: Data? = nil, timeoutInterval: TimeInterval? = nil, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy? = nil, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy? = nil) async throws -> T {
 		if self.blockAllAPIsNotSupported {
 			try self._checkAPIsContainAPI(api)
-			
+
 			try self._checkAPISupportsType(api, type: T.self)
 		}
-		
+
 		let requestUID = UUID()
 		self.requestsBeingProcessed.insert(requestUID)
 		if self.logActivity == .all {
 			logger.info("\(Date()) [GET] - (\(requestUID)) Processing GET Request")
 		}
-		
+
 		do {
 			try Task.checkCancellation()
 		} catch {
 			self.logger.error("\(Date()) - (\(requestUID)) Request to \(String(describing: api.path)) [Cancelled]")
 			throw ServerAPIError.taskCancelled(error: error)
 		}
-		
+
 		let request = try api.request(.GET, at: endpoint, in: self.currentEnvironment, additionalHeaders: self._combineAdditionalHeaders(additionalHeaders), additionalQueries: queries, httpBodyOverride: httpBody, timeoutInterval: timeoutInterval)
-		let decoded: T = try await self.sendRequest(request, requestUID: requestUID, dateDecodingStrategy: dateDecodingStrategy, keyDecodingStrategy: keyDecodingStrategy)
-		
+		let decoded: T = try await self.sendRequest(request, requestUID: requestUID, httpMethod: .GET, dateDecodingStrategy: dateDecodingStrategy, keyDecodingStrategy: keyDecodingStrategy)
+
 		do {
 			try Task.checkCancellation()
 		} catch {
 			self.logger.error("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) [Cancelled]")
 			throw ServerAPIError.taskCancelled(error: error)
 		}
-		
+
 		return decoded
 	}
-	
+
 	/// Sends a GET request and returns the specified value type based on the specified path.
 	///
 	/// The default implementation attempts to find and unwrap the first api that supports `path`,  `GET` http method, `currentEnvironment` (if the API's environment is specified), and supports the return type. If none are found, it throws a `ServerAPIError.badRequest`. If an api is found, it gets unwrapped and then this calls `-get(using:, to:, additionalHeaders:, queries:, httpBodyOverride:, timeoutInterval:, dataDecodingStrategry:, keyDecodingStrategy:)`.
@@ -153,15 +183,15 @@ public extension Server {
 		guard let api = self.apis.first(where: { $0.path == path && $0.supportedHTTPMethods.contains(.GET) && ($0.environment != nil ? $0.environment == self.currentEnvironment : true) && $0.supports(T.self) }) else {
 			throw ServerAPIError.notImplemented(description: "No API found for \(path)")
 		}
-		
+
 		return try await self.get(using: api, to: endpoint, additionalHeaders: additionalHeaders, queries: queries, httpBodyOverride: httpBody, timeoutInterval: timeoutInterval, dateDecodingStrategy: dateDecodingStrategy, keyDecodingStrategy: keyDecodingStrategy)
 	}
-	
-	// POSTs
+
+	// MARK: - POSTs
 	func post<T: Decodable>(using api: any ServerAPI, to endpoint: String? = nil, additionalHeaders: [String: String]? = nil, queries: [URLQueryItem]? = nil, httpBodyOverride httpBody: Data? = nil, timeoutInterval: TimeInterval? = nil, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy? = nil, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy? = nil) async throws -> T {
 		if self.blockAllAPIsNotSupported {
 			try self._checkAPIsContainAPI(api)
-			
+
 			try self._checkAPISupportsType(api, type: T.self)
 		}
 		let requestUID = UUID()
@@ -169,27 +199,27 @@ public extension Server {
 		if self.logActivity == .all {
 			logger.info("\(Date()) - (\(requestUID)) Processing POST Request")
 		}
-		
+
 		do {
 			try Task.checkCancellation()
 		} catch {
 			self.logger.error("\(Date()) - (\(requestUID)) Request to \(String(describing: api.path)) [Cancelled]")
 			throw ServerAPIError.taskCancelled(error: error)
 		}
-		
+
 		let request = try api.request(.POST, at: endpoint, in: self.currentEnvironment, additionalHeaders: self._combineAdditionalHeaders(additionalHeaders), additionalQueries: queries, httpBodyOverride: httpBody, timeoutInterval: timeoutInterval)
-		let decoded: T = try await self.sendRequest(request, requestUID: requestUID, dateDecodingStrategy: dateDecodingStrategy, keyDecodingStrategy: keyDecodingStrategy)
-		
+		let decoded: T = try await self.sendRequest(request, requestUID: requestUID, httpMethod: .POST, dateDecodingStrategy: dateDecodingStrategy, keyDecodingStrategy: keyDecodingStrategy)
+
 		do {
 			try Task.checkCancellation()
 		} catch {
 			self.logger.error("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) [Cancelled]")
 			throw ServerAPIError.taskCancelled(error: error)
 		}
-		
+
 		return decoded
 	}
-	
+
 	func post(using api: any ServerAPI, to endpoint: String? = nil, additionalHeaders: [String: String]? = nil, queries: [URLQueryItem]? = nil, httpBodyOverride httpBody: Data? = nil, timeoutInterval: TimeInterval? = nil, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy? = nil, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy? = nil) async throws -> Bool {
 		if self.blockAllAPIsNotSupported {
 			try self._checkAPIsContainAPI(api)
@@ -199,27 +229,27 @@ public extension Server {
 		if self.logActivity == .all {
 			logger.info("\(Date()) - (\(requestUID)) Processing POST Request")
 		}
-		
+
 		do {
 			try Task.checkCancellation()
 		} catch {
 			self.logger.error("\(Date()) - (\(requestUID)) Request to \(String(describing: api.path)) [Cancelled]")
 			throw ServerAPIError.taskCancelled(error: error)
 		}
-		
+
 		let request = try api.request(.POST, at: endpoint, in: self.currentEnvironment, additionalHeaders: self._combineAdditionalHeaders(additionalHeaders), additionalQueries: queries, httpBodyOverride: httpBody, timeoutInterval: timeoutInterval)
-		let wasSuccessful = try await self.sendRequest(request, requestUID: requestUID)
-		
+		let wasSuccessful = try await self.sendRequest(request, requestUID: requestUID, httpMethod: .POST)
+
 		do {
 			try Task.checkCancellation()
 		} catch {
 			self.logger.error("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) [Cancelled]")
 			throw ServerAPIError.taskCancelled(error: error)
 		}
-		
+
 		return wasSuccessful
 	}
-	
+
 	/// Sends a POST request and returns the specified value type based on the specified path.
 	///
 	/// The default implementation attempts to find and unwrap the first api that supports `path`,  `POST` http method, `currentEnvironment` (if the API's environment is specified), and supports the return type. If none are found, it throws a `ServerAPIError.badRequest`. If an api is found, it gets unwrapped and then this calls `-post(using:, to:, additionalHeaders:, queries:, httpBodyOverride:, timeoutInterval:, dataDecodingStrategry:, keyDecodingStrategy:)`.
@@ -230,75 +260,75 @@ public extension Server {
 		guard let api = self.apis.first(where: { $0.path == path && $0.supportedHTTPMethods.contains(.POST) && ($0.environment != nil ? $0.environment == self.currentEnvironment : true) && $0.supports(T.self) }) else {
 			throw ServerAPIError.notImplemented(description: "No API found for \(path)")
 		}
-		
+
 		return try await self.post(using: api, to: endpoint, additionalHeaders: additionalHeaders, queries: queries, httpBodyOverride: httpBody, timeoutInterval: timeoutInterval, dateDecodingStrategy: dateDecodingStrategy, keyDecodingStrategy: keyDecodingStrategy)
 	}
-	
-	// PUTs
+
+	// MARK: - PUTs
 	func put<T: Decodable>(using api: any ServerAPI, to endpoint: String? = nil, additionalHeaders: [String: String]? = nil, queries: [URLQueryItem]? = nil, httpBodyOverride httpBody: Data? = nil, timeoutInterval: TimeInterval? = nil, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy? = nil, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy? = nil) async throws -> T {
 		if self.blockAllAPIsNotSupported {
 			try self._checkAPIsContainAPI(api)
-			
+
 			try self._checkAPISupportsType(api, type: T.self)
 		}
-		
+
 		let requestUID = UUID()
 		self.requestsBeingProcessed.insert(requestUID)
 		if self.logActivity == .all {
 			logger.info("\(Date()) - (\(requestUID)) Processing PUT Request")
 		}
-		
+
 		do {
 			try Task.checkCancellation()
 		} catch {
 			self.logger.error("\(Date()) - (\(requestUID)) Request to \(String(describing: api.path)) [Cancelled]")
 			throw ServerAPIError.taskCancelled(error: error)
 		}
-		
+
 		let request = try api.request(.PUT, at: endpoint, in: self.currentEnvironment, additionalHeaders: self._combineAdditionalHeaders(additionalHeaders), additionalQueries: queries, httpBodyOverride: httpBody, timeoutInterval: timeoutInterval)
-		let decoded: T = try await self.sendRequest(request, requestUID: requestUID, dateDecodingStrategy: dateDecodingStrategy, keyDecodingStrategy: keyDecodingStrategy)
-		
+		let decoded: T = try await self.sendRequest(request, requestUID: requestUID, httpMethod: .PUT, dateDecodingStrategy: dateDecodingStrategy, keyDecodingStrategy: keyDecodingStrategy)
+
 		do {
 			try Task.checkCancellation()
 		} catch {
 			self.logger.error("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) [Cancelled]")
 			throw ServerAPIError.taskCancelled(error: error)
 		}
-		
+
 		return decoded
 	}
-	
+
 	func put(using api: any ServerAPI, to endpoint: String? = nil, additionalHeaders: [String: String]? = nil, queries: [URLQueryItem]? = nil, httpBodyOverride httpBody: Data? = nil, timeoutInterval: TimeInterval? = nil, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy? = nil, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy? = nil) async throws -> Bool {
 		if self.blockAllAPIsNotSupported {
 			try self._checkAPIsContainAPI(api)
 		}
-		
+
 		let requestUID = UUID()
 		self.requestsBeingProcessed.insert(requestUID)
 		if self.logActivity == .all {
 			logger.info("\(Date()) - (\(requestUID)) Processing PUT Request")
 		}
-		
+
 		do {
 			try Task.checkCancellation()
 		} catch {
 			self.logger.error("\(Date()) - (\(requestUID)) Request to \(String(describing: api.path)) [Cancelled]")
 			throw ServerAPIError.taskCancelled(error: error)
 		}
-		
+
 		let request = try api.request(.PUT, at: endpoint, in: self.currentEnvironment, additionalHeaders: self._combineAdditionalHeaders(additionalHeaders), additionalQueries: queries, httpBodyOverride: httpBody, timeoutInterval: timeoutInterval)
-		let wasSuccessful = try await self.sendRequest(request, requestUID: requestUID)
-		
+		let wasSuccessful = try await self.sendRequest(request, requestUID: requestUID, httpMethod: .PUT)
+
 		do {
 			try Task.checkCancellation()
 		} catch {
 			self.logger.error("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) [Cancelled]")
 			throw ServerAPIError.taskCancelled(error: error)
 		}
-		
+
 		return wasSuccessful
 	}
-	
+
 	/// Sends a PUT request and returns the specified value type based on the specified path.
 	///
 	/// The default implementation attempts to find and unwrap the first api that supports `path`,  `PUT` http method, `currentEnvironment` (if the API's environment is specified), and supports the return type. If none are found, it throws a `ServerAPIError.badRequest`. If an api is found, it gets unwrapped and then this calls `-put(using:, to:, additionalHeaders:, queries:, httpBodyOverride:, timeoutInterval:, dataDecodingStrategry:, keyDecodingStrategy:)`.
@@ -309,15 +339,15 @@ public extension Server {
 		guard let api = self.apis.first(where: { $0.path == path && $0.supportedHTTPMethods.contains(.PUT) && ($0.environment != nil ? $0.environment == self.currentEnvironment : true) && $0.supports(T.self) }) else {
 			throw ServerAPIError.notImplemented(description: "No API found for \(path)")
 		}
-		
+
 		return try await self.put(using: api, to: endpoint, additionalHeaders: additionalHeaders, queries: queries, httpBodyOverride: httpBody, timeoutInterval: timeoutInterval, dateDecodingStrategy: dateDecodingStrategy, keyDecodingStrategy: keyDecodingStrategy)
 	}
-	
-	// DELETEs
+
+	// MARK: - DELETEs
 	func delete<T: Decodable>(using api: any ServerAPI, to endpoint: String? = nil, additionalHeaders: [String: String]? = nil, queries: [URLQueryItem]? = nil, httpBodyOverride httpBody: Data? = nil, timeoutInterval: TimeInterval? = nil, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy? = nil, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy? = nil) async throws -> T {
 		if self.blockAllAPIsNotSupported {
 			try self._checkAPIsContainAPI(api)
-			
+
 			try self._checkAPISupportsType(api, type: T.self)
 		}
 		let requestUID = UUID()
@@ -325,27 +355,27 @@ public extension Server {
 		if self.logActivity == .all {
 			logger.info("\(Date()) - (\(requestUID)) Processing DELETE Request")
 		}
-		
+
 		do {
 			try Task.checkCancellation()
 		} catch {
 			self.logger.error("\(Date()) - (\(requestUID)) Request to \(String(describing: api.path)) [Cancelled]")
 			throw ServerAPIError.taskCancelled(error: error)
 		}
-		
+
 		let request = try api.request(.DELETE, at: endpoint, in: self.currentEnvironment, additionalHeaders: self._combineAdditionalHeaders(additionalHeaders), additionalQueries: queries, httpBodyOverride: httpBody, timeoutInterval: timeoutInterval)
-		let decoded: T = try await self.sendRequest(request, requestUID: requestUID, dateDecodingStrategy: dateDecodingStrategy, keyDecodingStrategy: keyDecodingStrategy)
-		
+		let decoded: T = try await self.sendRequest(request, requestUID: requestUID, httpMethod: .DELETE, dateDecodingStrategy: dateDecodingStrategy, keyDecodingStrategy: keyDecodingStrategy)
+
 		do {
 			try Task.checkCancellation()
 		} catch {
 			self.logger.error("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) [Cancelled]")
 			throw ServerAPIError.taskCancelled(error: error)
 		}
-		
+
 		return decoded
 	}
-	
+
 	func delete(using api: any ServerAPI, to endpoint: String? = nil, additionalHeaders: [String: String]? = nil, queries: [URLQueryItem]? = nil, httpBodyOverride httpBody: Data? = nil, timeoutInterval: TimeInterval? = nil, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy? = nil, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy? = nil) async throws -> Bool {
 		if self.blockAllAPIsNotSupported {
 			try self._checkAPIsContainAPI(api)
@@ -355,7 +385,7 @@ public extension Server {
 		if self.logActivity == .all {
 			logger.info("\(Date()) - (\(requestUID)) Processing DELETE Request")
 		}
-		
+
 		do {
 			try Task.checkCancellation()
 		} catch {
@@ -364,18 +394,18 @@ public extension Server {
 		}
 
 		let request = try api.request(.DELETE, at: endpoint, in: self.currentEnvironment, additionalHeaders: self._combineAdditionalHeaders(additionalHeaders), additionalQueries: queries, httpBodyOverride: httpBody, timeoutInterval: timeoutInterval)
-		let wasSuccessful = try await self.sendRequest(request, requestUID: requestUID)
-		
+		let wasSuccessful = try await self.sendRequest(request, requestUID: requestUID, httpMethod: .DELETE)
+
 		do {
 			try Task.checkCancellation()
 		} catch {
 			self.logger.error("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) [Cancelled]")
 			throw ServerAPIError.taskCancelled(error: error)
 		}
-		
+
 		return wasSuccessful
 	}
-	
+
 	/// Sends a DELETE request and returns the specified value type based on the specified path.
 	///
 	/// The default implementation attempts to find and unwrap the first api that supports `path`,  `DELETE` http method, `currentEnvironment` (if the API's environment is specified), and supports the return type. If none are found, it throws a `ServerAPIError.badRequest`. If an api is found, it gets unwrapped and then this calls `-delete(using:, to:, additionalHeaders:, queries:, httpBodyOverride:, timeoutInterval:, dataDecodingStrategry:, keyDecodingStrategy:)`.
@@ -386,31 +416,120 @@ public extension Server {
 		guard let api = self.apis.first(where: { $0.path == path && $0.supportedHTTPMethods.contains(.DELETE) && ($0.environment != nil ? $0.environment == self.currentEnvironment : true) && $0.supports(T.self) }) else {
 			throw ServerAPIError.notImplemented(description: "No API found for \(path)")
 		}
-		
+
 		return try await self.delete(using: api, to: endpoint, additionalHeaders: additionalHeaders, queries: queries, httpBodyOverride: httpBody, timeoutInterval: timeoutInterval, dateDecodingStrategy: dateDecodingStrategy, keyDecodingStrategy: keyDecodingStrategy)
 	}
-	
-	func sendRequest<T: Decodable>(_ request: URLRequest, requestUID: UUID, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy? = nil, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy? = nil) async throws -> T {
-		let data = try await self.courier.sendRequest(request, requestUID: requestUID)
-		
+
+	// MARK: - Send Request (Decodable)
+	func sendRequest<T: Decodable>(_ request: URLRequest, requestUID: UUID, httpMethod: HTTPMethod = .GET, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy? = nil, keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy? = nil) async throws -> T {
+		let data = try await self._executePipeline(request, requestUID: requestUID, httpMethod: httpMethod)
+
 		self.requestsBeingProcessed.remove(requestUID)
-		
+
 		guard let data: T = try self._decode(data: data, dateDecodingStrategy: dateDecodingStrategy, keyDecodingStrategy: keyDecodingStrategy) else {
 			throw ServerAPIError.unableToDecode(description: NSLocalizedString("Unable to decode object", comment: ""), error: nil)
 		}
 		return data
 	}
-	
+
 	/// Send the given request to the server and return the result.
 	/// - Returns: A result with `Void` or an `APIError`.
-	func sendRequest(_ request: URLRequest, requestUID: UUID) async throws -> Bool {
-		let _ = try await self.courier.sendRequest(request, requestUID: requestUID)
-		
+	func sendRequest(_ request: URLRequest, requestUID: UUID, httpMethod: HTTPMethod = .GET) async throws -> Bool {
+		let _ = try await self._executePipeline(request, requestUID: requestUID, httpMethod: httpMethod)
+
 		self.requestsBeingProcessed.remove(requestUID)
-		
+
 		return true
 	}
-	
+
+	// MARK: - Pipeline
+
+	/// Executes the full request pipeline: interceptors → auth → cache check → send with retry → response interceptors → cache store.
+	private func _executePipeline(_ request: URLRequest, requestUID: UUID, httpMethod: HTTPMethod) async throws -> Data? {
+		var currentRequest = request
+
+		// 1. Apply request interceptors
+		for interceptor in self.requestInterceptors {
+			currentRequest = try await interceptor.intercept(currentRequest)
+		}
+
+		// 2. Apply authenticator
+		if let authenticator = self.authenticator {
+			currentRequest = try await authenticator.authenticate(currentRequest)
+		}
+
+		// 3. Check cache (GET only)
+		if httpMethod == .GET, let cache = self.responseCache, let url = currentRequest.url {
+			if let cachedData = await cache.cachedResponse(for: url) {
+				if self.logActivity == .all {
+					self.logger.info("\(Date()) - (\(requestUID)) Cache hit for \(url.absoluteString)")
+				}
+				return cachedData
+			}
+		}
+
+		// 4. Send with retry
+		var data = try await self._sendWithRetry(currentRequest, requestUID: requestUID)
+
+		// 5. Apply response interceptors
+		for interceptor in self.responseInterceptors {
+			data = try await interceptor.intercept(data, for: currentRequest)
+		}
+
+		// 6. Store in cache (GET only)
+		if httpMethod == .GET, let cache = self.responseCache, let url = currentRequest.url, let data {
+			await cache.store(data, for: url, ttl: self.cacheTTL)
+		}
+
+		return data
+	}
+
+	/// Sends the request via the courier with retry logic and 401 refresh handling.
+	private func _sendWithRetry(_ request: URLRequest, requestUID: UUID) async throws -> Data? {
+		let policy = self.retryPolicy
+		let maxAttempts = policy?.maxAttempts ?? 1
+		var lastError: Error?
+		var didRefreshAuth = false
+
+		for attempt in 0..<maxAttempts {
+			do {
+				return try await self.courier.sendRequest(request, requestUID: requestUID)
+			} catch let error as ServerAPIError {
+				lastError = error
+
+				// Handle 401 → refresh → retry once (doesn't count against retry limit)
+				if case .unauthorized = error, let authenticator = self.authenticator, !didRefreshAuth {
+					didRefreshAuth = true
+					do {
+						try await authenticator.refreshCredentials()
+						var refreshedRequest = try await authenticator.authenticate(request)
+						// Preserve the original request body and URL
+						refreshedRequest.httpBody = request.httpBody
+						return try await self.courier.sendRequest(refreshedRequest, requestUID: requestUID)
+					} catch {
+						throw error // throw the original unauthorized error if refresh fails
+					}
+				}
+
+				// Check if we should retry
+				guard let policy, attempt < maxAttempts - 1, policy.shouldRetry(error) else {
+					throw error
+				}
+
+				// Wait for backoff delay
+				let delay = policy.backoff.delay(forAttempt: attempt)
+				if delay > 0 {
+					try await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+				}
+			} catch {
+				// Non-ServerAPIError — throw immediately
+				throw error
+			}
+		}
+
+		throw lastError ?? ServerAPIError.unknown(description: "Retry exhausted")
+	}
+
 	/// Checks if the `apis` contains the given api.
 	///
 	/// - Throws: A `ServerAPIError` if not found.
@@ -419,13 +538,13 @@ public extension Server {
 			throw ServerAPIError.badRequest(description: NSLocalizedString("API for path \(api.path) isn't supported.", comment: ""))
 		}
 	}
-	
+
 	fileprivate func _checkAPISupportsType<T: Decodable>(_ api: any ServerAPI, type: T.Type) throws {
 		guard api.supports(T.self) else {
 			throw ServerAPIError.badRequest(description: NSLocalizedString("API doesn't support type: `\(T.self)`.", comment: ""))
 		}
 	}
-	
+
 	private func _combineAdditionalHeaders(_ additionalHeaders: [String: String]?) -> [String: String]? {
 		guard let additionalHeaders else {
 			return self.additionalHTTPHeaders
@@ -433,7 +552,7 @@ public extension Server {
 		guard let additionalHTTPHeaders else {
 			return additionalHeaders
 		}
-		
+
 		return additionalHTTPHeaders.merging(additionalHeaders, uniquingKeysWith: { $1 })
 	}
 }
@@ -443,7 +562,7 @@ extension Server {
 		guard let data else {
 			throw ServerAPIError.incorrectReponseData(description: NSLocalizedString("Unexpected empty response returned.", comment: ""))
 		}
-		
+
 		do {
 			let decoder = JSONDecoder()
 			if let dateDecodingStrategy {
@@ -452,7 +571,7 @@ extension Server {
 			if let keyDecodingStrategy {
 				decoder.keyDecodingStrategy = keyDecodingStrategy
 			}
-			
+
 			return try decoder.decode(DecodableType.self, from: data)
 		} catch let decodingError as DecodingError {
 			let decodingErrorContextDescription = { (context: DecodingError.Context) -> String in
@@ -460,7 +579,7 @@ extension Server {
 				description += context.codingPath.map(\.stringValue).joined(separator: ", ")
 				return description
 			}
-			
+
 			switch decodingError {
 				case .typeMismatch(_, let context), .valueNotFound(_, let context), .keyNotFound(_, let context), .dataCorrupted(let context):
 					throw ServerAPIError.unableToParse(description: decodingErrorContextDescription(context), error: decodingError)
