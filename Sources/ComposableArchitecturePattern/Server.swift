@@ -139,38 +139,47 @@ public extension Server {
 
 	var cacheTTL: TimeInterval { 300 }
 	
+	/// Updates the current environment.
 	func updateCurrentEnvironment(_ environment: ServerEnvironment?) async {
 		self.currentEnvironment = environment
 	}
 	
+	/// Updates all environments available to this server.
 	func updateEnvironments(_ environments: [ServerEnvironment]) async {
 		self.environments = environments
 	}
 	
+	/// Updates headers used by the server.
 	func updateAdditionalHTTPHeaders(_ additionalHTTPHeaders: [String: String]?) async {
 		self.additionalHTTPHeaders = additionalHTTPHeaders
 	}
 	
+	/// Updates API's available to this server.
 	func updateAPIs(_ apis: [any ServerAPI]) async {
 		self.apis = apis
 	}
 	
+	/// Updates authenticator for the server.
 	func updateAuthenticator(_ authenticator: (any Authenticator)?) async {
 		self.authenticator = authenticator
 	}
 	
+	/// Updates retry policy for the server.
 	func updateRetryPolicy(_ retryPolicy: RetryPolicy?) async {
 		self.retryPolicy = retryPolicy
 	}
 	
+	/// Updates request interceptors.
 	func updateRequestInterceptors(_ requestInterceptors: [any RequestInterceptor]) async {
 		self.requestInterceptors = requestInterceptors
 	}
 	
+	/// Updates response interceptors.
 	func updateResponseInterceptors(_ responseInterceptors: [any ResponseInterceptor]) async {
 		self.responseInterceptors = responseInterceptors
 	}
 	
+	/// Updates response cache for the server.
 	func updateResponseCache(_ responseCache: (any ResponseCache)?) async {
 		self.responseCache = responseCache
 	}
