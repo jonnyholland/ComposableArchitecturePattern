@@ -5,6 +5,7 @@
 //  Created by Jonathan Holland on 12/8/24.
 //
 
+#if canImport(os)
 import Foundation
 import os
 
@@ -54,3 +55,4 @@ public actor DefaultCourier: Courier {
 		return data
 	}
 }
+#endif

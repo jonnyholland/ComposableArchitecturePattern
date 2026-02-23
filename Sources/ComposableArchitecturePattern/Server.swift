@@ -5,8 +5,8 @@
 //  Created by Jonathan Holland on 1/01/24.
 //
 
-import SwiftUI
-import OSLog
+import Foundation
+import Logging
 
 /// The HTTP method type.
 public enum HTTPMethod: String, Equatable, Sendable {
@@ -94,10 +94,14 @@ public extension Server {
 	}
 	
 	var logger: Logger {
-		return Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.CAP.Server", category: String(describing: Self.self))
+		return Logger(label: "\(Bundle.main.bundleIdentifier ?? "com.CAP.Server").\(String(describing: Self.self))")
 	}
-	
+
+	#if canImport(os)
 	var courier: Courier { DefaultCourier.shared }
+	#elseif canImport(AsyncHTTPClient)
+	var courier: Courier { AsyncHTTPClientCourier.shared }
+	#endif
 	
 	var currentEnvironment: ServerEnvironment? { nil }
 	
