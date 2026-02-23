@@ -2,15 +2,30 @@
 
 Build apps and design code in a self-sustainable and scalable way, no matter the current architecture. 
 
-CAP allows you to get started quickly and build robust code. The idea is to use a coordinator between networking, the view, etc when absolutely necessary. When it's not necessary to use a coordinator, you can still use CAP for the library part of it to build strong stable code. To learn more about why I created this package, what composable means, and other stuf, check out [Learn more](#learn-more).
+CAP allows you to get started quickly and build robust code. The idea is to use a coordinator between networking, the view, etc when absolutely necessary. When it's not necessary to use a coordinator, you can still use CAP for the library part of it to build strong stable code. To learn more about why I created this package, what composable means, and other stuff, check out [Learn more](#learn-more).
 
 ## Get Started
 It would behoove you to read through [Core Principles](#core-principles) to fully understand the overall logic behind this architecture pattern.
 
 Add CAP as a dependency to your project:
 ```
-.package(url: "https://github.com/jonnyholland/ComposableArchitecturePattern.git", from: "1.4.1")
+.package(url: "https://github.com/jonnyholland/ComposableArchitecturePattern.git", from: "1.4.6")
 ```
+
+### Platform Support
+| Platform | Minimum Version |
+|----------|----------------|
+| iOS      | 17.0           |
+| macOS    | 14.0           |
+| tvOS     | 17.0           |
+| watchOS  | 10.0           |
+| Linux    | Swift 6.2+     |
+
+CAP's networking layer (Server, Courier, ServerAPI) is fully cross-platform. On Apple platforms the default courier uses `URLSession`; on Linux it uses [AsyncHTTPClient](https://github.com/swift-server/async-http-client). SwiftUI-specific types (`AsyncButton`, `ViewCoordinator`, `AsyncStableImage`) are available on Apple platforms only.
+
+### Dependencies
+- [swift-log](https://github.com/apple/swift-log) — used for logging across all platforms
+- [async-http-client](https://github.com/swift-server/async-http-client) — used on macOS and Linux for `AsyncHTTPClientCourier`
 
 ## Demo Apps
 - [NY Times News](https://github.com/jonnyholland/NY-Times-News/tree/main)
@@ -69,10 +84,10 @@ actor UserNetworking: Server {
     var apis: [any ServerAPI] = [Self.userInfoAPI]
 
     func getUserInfo() async throws -> UserInfoResponse {
-	return self.get(using: Self.userInfoAPI)
+	return try await self.get(using: Self.userInfoAPI)
     }
     func updateUserInfo(with request: UserInfoUpdate) async throws {
-	return self.put(using: Self.userInfoAPI)
+	try await self.put(using: Self.userInfoAPI)
     }
 }
 
@@ -80,11 +95,29 @@ actor CoreUserProvider: UserProvider {
     lazy var coreServer = CoreServer()
 
     func getUserInfo() async throws -> UserInfoResponse {
-	return self.coreServer.getUserInfo()
+	return try await self.coreServer.getUserInfo()
     }
     func updateUserInfo(with request: UserInfoUpdate) async throws {
-	return self.coreServer.updateUserInfo()
+	try await self.coreServer.updateUserInfo()
     }
+}
+```
+
+### Couriers
+A `Courier` is the transport layer that a `Server` uses to send URL requests. CAP ships with three couriers:
+
+| Courier | Platform | Description |
+|---------|----------|-------------|
+| `DefaultCourier` | Apple only | Uses `URLSession` for request execution. This is the default on Apple platforms. |
+| `AsyncHTTPClientCourier` | macOS, Linux | Uses [AsyncHTTPClient](https://github.com/swift-server/async-http-client) for non-blocking, NIO-based request execution. This is the default on Linux. |
+| `MockCourier` | All | Loads response data from a local file URL. Useful for unit testing. |
+
+You can provide your own courier by conforming to the `Courier` protocol and overriding the `courier` property on your `Server`:
+
+```swift
+actor MyServer: Server {
+    var courier: Courier { AsyncHTTPClientCourier(timeout: .seconds(30)) }
+    // ...
 }
 ```
 
@@ -109,22 +142,20 @@ final class AppCoordinator: Coordinator {
 }
 ```
 
-A view coordinator can be great for integrating into legacy (UIKit/AppKit) projects that use legacy architectures, such as MVVM, MVC, or some mixture, as well as for just generally to make sure a complex feature view has easy coordination between networking, the model, and the view. 
+A view coordinator can be great for integrating into legacy (UIKit/AppKit) projects that use legacy architectures, such as MVVM, MVC, or some mixture, as well as for just generally to make sure a complex feature view has easy coordination between networking, the model, and the view.
 
 ```swift
 @Observable
 final class FeatureDetailCoordinator: ViewCoordinator {
 	var state: CoordinatorState = .idle
-	var viewModel: FeatureDetailViewModel
-	
+	var details: FeatureDetails?
+
 	var view: some View {
-		SomeView(viewModel: self.viewModel)
-			.environment(\.error, self.viewModel.error)
-			// Add other environment properties and values…
+		FeatureDetailView(details: self.details)
 	}
 
-	func load() async throws {
-		// Perform any necessary network requests or logic necessary for coordinator operation, such as additional setup of `viewModel`.
+	func load() async {
+		// Perform any necessary network requests or logic necessary for coordinator operation.
 		self.state = .loaded
 	}
 	
@@ -135,8 +166,7 @@ final class FeatureDetailCoordinator: ViewCoordinator {
 	func perform(action: Actions) async throws {
 		switch action {
 			case .fetchDetails:
-				let details = self.provider.fetchDetails(for: id)
-				self.viewModel.update(from: details)
+				self.details = try await self.provider.fetchDetails(for: id)
 		}
 	}
 }
@@ -317,4 +347,4 @@ Composable means self-sustained<sup>1</sup>, which means each view should be abl
 You'll notice this is called a "pattern". This is because I believe software architecture always needs guidance but not always a library or framework. This approach allows you to make use of the architecture pattern and the library as you see fit. While being light and overall easy to use, writing good code takes time and effort and your goal should be to improve as a developer to architect safe code that hopefully is scalable and reusable.
 
 ## References
-1. (Composability - Wikipedia)[https://en.wikipedia.org/wiki/Composability]
+1. [Composability - Wikipedia](https://en.wikipedia.org/wiki/Composability)
