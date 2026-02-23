@@ -9,7 +9,7 @@
 import AsyncHTTPClient
 import Foundation
 import NIOCore
-import os
+import Logging
 
 /// An actor that couriers requests using `AsyncHTTPClient.HTTPClient`.
 public actor AsyncHTTPClientCourier: Courier {
@@ -26,7 +26,7 @@ public actor AsyncHTTPClientCourier: Courier {
 	public var maxResponseSize: Int
 
 	/// The logger to use with communicating server courier activity.
-	lazy var logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.CAP.AsyncHTTPClientCourier", category: String(describing: Self.self))
+	lazy var logger = Logger(label: "\(Bundle.main.bundleIdentifier ?? "com.CAP.AsyncHTTPClientCourier").\(String(describing: Self.self))")
 
 	/// Whether or not to log all activity with this server.
 	var logActivity: LogActivity
