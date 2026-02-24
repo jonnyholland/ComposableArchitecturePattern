@@ -4,6 +4,7 @@
 //
 
 import XCTest
+import Logging
 @testable import ComposableArchitecturePattern
 
 // MARK: - Pipeline Test Helpers
@@ -108,21 +109,28 @@ private actor PipelineAuthenticator: Authenticator {
 
 private struct PipelineTestAPI: ServerAPI {
 	let id = UUID()
+	var environment: ServerEnvironment? = .localTests(url: nil)
 	var path: String = "/test"
+	var headers: [String: String]? = nil
+	var queries: [URLQueryItem]? = nil
+	var body: Data? = nil
 	var supportedHTTPMethods: [HTTPMethod] = [.GET, .POST]
 	var supportedReturnObjects: [Decodable.Type]? = [MockResponse1.self]
-	var strictEnvironmentEnforcement: Bool { false }
-	var environment: ServerEnvironment? = .localTests(url: nil)
+	var timeoutInterval: TimeInterval = 60
+	var strictEnvironmentEnforcement: Bool = false
 }
 
 private actor PipelineTestServer: Server {
 	var environments: [ServerEnvironment] = [.localTests(url: nil)]
 	var currentEnvironment: ServerEnvironment? = .localTests(url: nil)
-	var requestsBeingProcessed = Set<UUID>()
+	var additionalHTTPHeaders: [String: String]? = nil
+	var logActivity: LogActivity = .all
 	var apis: [any ServerAPI] = [PipelineTestAPI()]
 	var blockAllAPIsNotSupported: Bool = false
+	var requestsBeingProcessed = Set<UUID>()
+	var logger: Logger = Logger(label: "com.CAP.PipelineTestServer")
 
-	let courier: Courier
+	var courier: Courier
 	var authenticator: (any Authenticator)?
 	var retryPolicy: RetryPolicy?
 	var requestInterceptors: [any RequestInterceptor]
