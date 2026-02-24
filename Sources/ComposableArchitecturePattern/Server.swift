@@ -107,6 +107,59 @@ public protocol Server: Actor {
 }
 
 public extension Server {
+	/// A new server for handling API calls.
+	///
+	/// Use this if you need a base server without needing to heavily customize the functionality beyond the values passed in.
+	///
+	/// - Parameters:
+	/// 	- currentEnvironment: The current environment of the server for making service calls.
+	/// 	- environments: Environments available to the server for making service calls.
+	/// 	- additionalHTTPHeaders: Additional headers needed for making service calls. This is useful for passing in authentication headers that will always need to be there.
+	/// 	- apis: The API's the server will manage.
+	/// 	- courier: The courier for actually making the service calls. If you're running on native Apple software, use `DefaultCourier.shared`. If running on Linux or something else, use `AsyncHTTPClientCourier.shared`.
+	/// 	- authenticator:  An object to manage authentication for server requests.
+	/// 	- requestInterceptors: Interceptors to act on or transform requests before they are sent.
+	/// 	- responseInterceptors: Interceptors to act on or transform responses when they are received.
+	/// 	- responseCache: An object to cache responses.
+	/// 	- retryPolicy: How retries should be handled.
+	/// 	- cacheTTL: Caching duration.
+	/// 	- blockAllAPIsNotSupported: Whether or not to strictly block all API's that try to use this service that are not explicitly defined in `apis`. Defaults to `true`.
+	/// 	- logActivity: How to log activity of the server.
+	/// 	- logger: The logger object to use for logging.
+	static func new(
+		currentEnvironment: ServerEnvironment?,
+		environments: [ServerEnvironment],
+		additionalHTTPHeaders: [String: String]?,
+		apis: [any ServerAPI],
+		courier: any Courier,
+		authenticator: (any Authenticator)?,
+		requestInterceptors: [any RequestInterceptor] = [],
+		responseInterceptors: [any ResponseInterceptor] = [],
+		responseCache: (any ResponseCache)?,
+		retryPolicy: RetryPolicy? = nil,
+		cacheTTL: TimeInterval = 300,
+		blockAllAPIsNotSupported: Bool = true,
+		logActivity: LogActivity = .all,
+		logger: Logger
+	) -> some Server {
+		BaseServer(
+			currentEnvironment: currentEnvironment,
+			environments: environments,
+			additionalHTTPHeaders: additionalHTTPHeaders,
+			apis: apis,
+			courier: courier,
+			authenticator: authenticator,
+			requestInterceptors: requestInterceptors,
+			responseInterceptors: responseInterceptors,
+			responseCache: responseCache,
+			retryPolicy: retryPolicy,
+			cacheTTL: cacheTTL,
+			blockAllAPIsNotSupported: blockAllAPIsNotSupported,
+			logActivity: logActivity,
+			logger: logger
+		)
+	}
+	
 	var logActivity: LogActivity {
 		return .all
 	}
