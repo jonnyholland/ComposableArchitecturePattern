@@ -19,7 +19,7 @@ public enum HTTPMethod: String, Equatable, Sendable {
 /// An actor that handles server interactions.
 ///
 /// This is the equivalent of a web service. The idea is for this to be the base actor to handle all server interactions that correspond to the defined API's. This ensures API's can be scoped to specific servers, thus allowing you to scope feature support.
-public protocol Server: Actor {
+public protocol Server: Actor, Sendable {
 	/// Environments supported by this server.
 	var environments: [ServerEnvironment] { get set }
 	/// The current environment being used by this server to process requests.
@@ -690,7 +690,7 @@ extension Server {
 	}
 }
 
-public enum LogActivity {
+public enum LogActivity: Sendable {
 	/// Post all activities to the logger.
 	case all
 	/// Post only errors to the logger.
