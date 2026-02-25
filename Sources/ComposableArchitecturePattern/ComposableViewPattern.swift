@@ -1,4 +1,6 @@
+#if canImport(SwiftUI)
 import SwiftUI
+#endif
 
 /// A closure called asynchronously with the given output and throw any error.
 public typealias OutputHandler<Output> = (Output) async throws -> Void
@@ -8,14 +10,16 @@ public protocol Composable {
 	associatedtype Actions
 }
 
+#if canImport(SwiftUI)
 /// A protocol to provide a basis for making the implementation composable.
 public protocol ComposableView: View, Composable {
 	/// A closure called to handle actions performed in the view.
 	var perform: OutputHandler<Actions> { get }
-	
+
 	/// Any layout designs to support a view.
 	associatedtype Design
 }
+#endif
 
 public protocol ComposableObject: Composable {
 	func handle(action: Actions) async throws

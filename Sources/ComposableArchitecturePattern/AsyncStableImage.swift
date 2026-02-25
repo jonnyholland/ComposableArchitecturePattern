@@ -5,6 +5,7 @@
 //  Created by Jonathan Holland on 2/14/25.
 //
 
+#if canImport(SwiftUI)
 import SwiftUI
 
 /// Displays an image from the specified URL owned by the view.
@@ -15,7 +16,7 @@ public struct AsyncStableImage<ImageContent: View, Placeholder: View>: View {
 	let url: URL?
 	let imageClosure: (Image?, Error?) -> ImageContent
 	let placeholderClosure: Placeholder?
-	
+
 	/// Create a new `AsyncStableImage`.
 	/// - Parameters:
 	/// 	- url: The URL the image is located at.
@@ -30,13 +31,13 @@ public struct AsyncStableImage<ImageContent: View, Placeholder: View>: View {
 		self.imageClosure = imageView
 		self.placeholderClosure = placeholderView
 	}
-	
+
 	// MARK: Local properties
 	@State private var refreshID = UUID()
 	@State private var isLoading = true
 	@State private var image: Image?
 	@State private var error: Error?
-	
+
 	public var body: some View {
 		self.contentView
 			.task(
@@ -66,7 +67,7 @@ public struct AsyncStableImage<ImageContent: View, Placeholder: View>: View {
 				}
 			)
 	}
-	
+
 	@ViewBuilder
 	private var contentView: some View {
 		if self.isLoading {
@@ -76,3 +77,4 @@ public struct AsyncStableImage<ImageContent: View, Placeholder: View>: View {
 		}
 	}
 }
+#endif

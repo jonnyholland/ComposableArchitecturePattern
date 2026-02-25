@@ -5,33 +5,35 @@
 //  Created by Jonathan Holland on 3/9/24.
 //
 
+#if canImport(SwiftUI)
 import SwiftUI
+#endif
 
 /// An object that acts as a coordinator.
 public protocol Coordinator {
 	/// The current state of the coordinator.
 	var state: CoordinatorState { get }
-	
+
 	/// Load the coordinator with any logic of setup necessary for its operation.
 	func load() async
 	/// Perform any necessary function to reload the coordinator.
 	func reload() async
-	
+
 	/// An enumeration of expected results
 	associatedtype Results
 	/// A stream of current events corresponding to the coordinator's status.
 	///
 	/// This stream is useful to react to the coordinator's change in status, such as when the coordinator is finished loading or if the coordinator needs to reload.
 	var statusStream: AsyncStream<CoordinatorStatus<Actions, Results>> { get }
-	
+
 	/// An enumeration of supported actions of the coordinator.
 	associatedtype Actions
-	
+
 	/// Perform the specified enum action asynchronously.
 	/// - Returns: The specified result.
 	@discardableResult
 	func perform(action: Actions) async throws -> Results
-	
+
 	/// An enumeration of actions to sync to.
 	associatedtype SyncActions
 	/// Sync the coordinator to the specified stream.
@@ -52,9 +54,9 @@ extension Coordinator {
 	public var statusStream: AsyncStream<CoordinatorStatus<EmptyActions, EmptyResults>> {
 		AsyncStream { _ in }
 	}
-	
+
 	public func perform(action: EmptyActions) async throws -> EmptyResults {}
-	
+
 	public func sync(to stream: AsyncStream<EmptyActions>) {}
 }
 
@@ -72,7 +74,7 @@ public enum CoordinatorState: Equatable {
 		}
 		return false
 	}
-	
+
 	/// The coordinator is in idle mode.
 	case idle
 	/// The coordinator has fully loaded and is operational.
@@ -90,9 +92,11 @@ public enum CoordinatorStatus<A, R> {
 	case stateUpdated(newState: CoordinatorState)
 }
 
+#if canImport(SwiftUI)
 /// An object that coordinates between view, networking, or other logic
 public protocol ViewCoordinator: Coordinator {
 	associatedtype ViewCoordinatorContentView: View
 	/// What the coordinator displays as its main content
 	var view: ViewCoordinatorContentView { get }
 }
+#endif
