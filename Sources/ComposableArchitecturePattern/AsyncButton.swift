@@ -5,7 +5,8 @@
 //  Created by Jonathan Holland on 2/14/25.
 //
 
-import os
+#if canImport(SwiftUI)
+import Logging
 import SwiftUI
 
 /// An action that runs asynchronously.
@@ -32,23 +33,23 @@ public struct AsyncButton<Label: View>: View {
 		self.action = action
 		self.label = label
 	}
-	
+
 	// MARK: Injected properties
 	let buttonRole: ButtonRole?
 	let action: AsyncAction
 	let label: Label
-	
+
 	// MARK: Local properties
 	@State private var taskID = UUID()
 	@State private var state: AsyncActionState = .idle
 	private var detachTask = false
 	private var loggerClosure: ((AsyncActionState) -> Void)?
-	private let logger = Logger()
-	
+	private let logger = Logger(label: "com.CAP.AsyncButton")
+
 	public var body: some View {
 		Button {
 			let action = self.action
-			
+
 			if self.detachTask {
 				Task.detached {
 					await action()
@@ -67,25 +68,25 @@ public struct AsyncButton<Label: View>: View {
 				guard !self.detachTask else {
 					return
 				}
-				
+
 				self.state = .running
 				self.logger.info("\(Date()) [AsyncButton] - Running task...")
-				
+
 				await self.action()
-				
+
 				self.state = .finished
 				self.logger.info("\(Date()) [AsyncButton] - Finished running task.")
 			}
 		)
 	}
-	
+
 	/// Detach the task action from the view.
 	public func detachTask(_ value: Bool) -> Self {
 		var newSelf = self
 		newSelf.detachTask = value
 		return newSelf
 	}
-	
+
 	/// Get logger state information about the task running.
 	public func logger(_ logger: @escaping (AsyncActionState) -> Void) -> Self {
 		var newSelf = self
@@ -93,3 +94,4 @@ public struct AsyncButton<Label: View>: View {
 		return newSelf
 	}
 }
+#endif
