@@ -12,6 +12,7 @@ import Foundation
 import FoundationNetworking
 #endif
 import NIOCore
+import NIOFoundationCompat
 import Logging
 
 /// An actor that couriers requests using `AsyncHTTPClient.HTTPClient`.

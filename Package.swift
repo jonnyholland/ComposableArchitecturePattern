@@ -26,6 +26,7 @@ let package = Package(
     dependencies: [
 		.package(url: "https://github.com/apple/swift-log.git", from: "1.5.0"),
 		.package(url: "https://github.com/swift-server/async-http-client.git", from: "1.24.0"),
+		.package(url: "https://github.com/apple/swift-nio.git", from: "2.65.0"),
     ],
     targets: [
 		.target(
@@ -33,6 +34,7 @@ let package = Package(
 			dependencies: [
 				.product(name: "Logging", package: "swift-log"),
 				.product(name: "AsyncHTTPClient", package: "async-http-client", condition: .when(platforms: [.macOS, .linux])),
+				.product(name: "NIOFoundationCompat", package: "swift-nio", condition: .when(platforms: [.macOS, .linux])),
 			]
 		),
         .testTarget(
