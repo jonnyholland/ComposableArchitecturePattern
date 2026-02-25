@@ -7,6 +7,9 @@
 
 #if canImport(Darwin)
 import Foundation
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
 import Logging
 
 /// An actor that can be used for couriering requests.
