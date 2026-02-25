@@ -8,6 +8,9 @@
 #if canImport(AsyncHTTPClient)
 import AsyncHTTPClient
 import Foundation
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
 import NIOCore
 import Logging
 

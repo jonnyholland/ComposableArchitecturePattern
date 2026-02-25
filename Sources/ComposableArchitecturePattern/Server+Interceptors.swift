@@ -6,6 +6,9 @@
 //
 
 import Foundation
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
 
 /// Intercepts and transforms outgoing requests before they are sent.
 public protocol RequestInterceptor: Sendable {
