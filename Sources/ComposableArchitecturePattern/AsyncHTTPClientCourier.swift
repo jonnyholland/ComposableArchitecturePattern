@@ -29,7 +29,7 @@ public actor AsyncHTTPClientCourier: Courier {
 	public var maxResponseSize: Int
 
 	/// The logger to use with communicating server courier activity.
-	lazy var logger = Logger(label: "\(Bundle.main.bundleIdentifier ?? "com.CAP.AsyncHTTPClientCourier").\(String(describing: Self.self))")
+	lazy var logger = Logger(label: "com.CAP.AsyncHTTPClientCourier")
 
 	/// Whether or not to log all activity with this server.
 	var logActivity: LogActivity
@@ -75,8 +75,8 @@ public actor AsyncHTTPClientCourier: Courier {
 			self.logger.info("\(Date()) - (\(requestUID)) Request to \(url.absoluteString) [Finish]")
 		}
 
-		let body = try await response.body.collect(upTo: self.maxResponseSize)
-		let data = Data(buffer: body)
+		var responseBody = try await response.body.collect(upTo: self.maxResponseSize)
+		let data = responseBody.readData(length: responseBody.readableBytes) ?? Data()
 		let statusCode = Int(response.status.code)
 
 		switch statusCode {
