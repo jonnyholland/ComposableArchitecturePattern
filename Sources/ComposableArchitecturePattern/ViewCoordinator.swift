@@ -61,7 +61,7 @@ extension Coordinator {
 }
 
 /// The state of the coordinator.
-public enum CoordinatorState: Equatable {
+public enum CoordinatorState: Equatable, Sendable {
 	public static func == (lhs: Self, rhs: Self) -> Bool {
 		if case let .error(lhsError, lhsDescription) = lhs, case let .error(rhsError, rhsDescription) = rhs {
 			return lhsError?.localizedDescription == rhsError?.localizedDescription || lhsDescription == rhsDescription
