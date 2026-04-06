@@ -24,3 +24,5 @@ public struct CreationResponse<T: Codable>: Codable {
 		self.id = id
 	}
 }
+
+extension CreationResponse: Sendable where T: Sendable {}
