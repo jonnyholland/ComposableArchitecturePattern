@@ -10,7 +10,7 @@ import SwiftUI
 #endif
 
 /// An object that acts as a coordinator.
-public protocol Coordinator: Sendable {
+@MainActor public protocol Coordinator: Sendable {
 	/// The current state of the coordinator.
 	var state: CoordinatorState { get }
 
@@ -94,7 +94,7 @@ public enum CoordinatorStatus<A: Sendable, R: Sendable>: Sendable{
 
 #if canImport(SwiftUI)
 /// An object that coordinates between view, networking, or other logic
-public protocol ViewCoordinator: Coordinator, Sendable {
+@MainActor public protocol ViewCoordinator: Coordinator {
 	associatedtype ViewCoordinatorContentView: View
 	/// What the coordinator displays as its main content
 	var view: ViewCoordinatorContentView { get }
