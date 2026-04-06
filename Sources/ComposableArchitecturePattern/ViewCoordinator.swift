@@ -10,7 +10,7 @@ import SwiftUI
 #endif
 
 /// An object that acts as a coordinator.
-public protocol Coordinator {
+public protocol Coordinator: Sendable {
 	/// The current state of the coordinator.
 	var state: CoordinatorState { get }
 
@@ -20,14 +20,14 @@ public protocol Coordinator {
 	func reload() async
 
 	/// An enumeration of expected results
-	associatedtype Results
+	associatedtype Results: Sendable
 	/// A stream of current events corresponding to the coordinator's status.
 	///
 	/// This stream is useful to react to the coordinator's change in status, such as when the coordinator is finished loading or if the coordinator needs to reload.
 	var statusStream: AsyncStream<CoordinatorStatus<Actions, Results>> { get }
 
 	/// An enumeration of supported actions of the coordinator.
-	associatedtype Actions
+	associatedtype Actions: Sendable
 
 	/// Perform the specified enum action asynchronously.
 	/// - Returns: The specified result.
@@ -35,7 +35,7 @@ public protocol Coordinator {
 	func perform(action: Actions) async throws -> Results
 
 	/// An enumeration of actions to sync to.
-	associatedtype SyncActions
+	associatedtype SyncActions: Sendable
 	/// Sync the coordinator to the specified stream.
 	///
 	/// Use this if there is some action or function that is dependent upon some other coordinator's `statusStream` or some other asynchronous stream.
@@ -47,8 +47,8 @@ extension Coordinator {
 	public func reload() async {}
 }
 
-public enum EmptyActions {}
-public enum EmptyResults {}
+public enum EmptyActions: Sendable {}
+public enum EmptyResults: Sendable {}
 
 extension Coordinator {
 	public var statusStream: AsyncStream<CoordinatorStatus<EmptyActions, EmptyResults>> {
@@ -85,7 +85,7 @@ public enum CoordinatorState: Equatable, Sendable {
 	case error(error: Error? = nil, description: String? = nil)
 }
 
-public enum CoordinatorStatus<A, R> {
+public enum CoordinatorStatus<A: Sendable, R: Sendable>: Sendable{
 	/// The specified action was handled by the coordinator with the specified result. `result` is defaulted to `nil` because there may be scenarios where you don't want to expose the result of the action, such as when a coordinator may be handling sensitive data or data that is irrelevant outside the context of the coordinator.
 	case actionHandled(action: A, result: R? = nil)
 	/// The coordinator's state was updated to the specified new state.
@@ -94,7 +94,7 @@ public enum CoordinatorStatus<A, R> {
 
 #if canImport(SwiftUI)
 /// An object that coordinates between view, networking, or other logic
-public protocol ViewCoordinator: Coordinator {
+public protocol ViewCoordinator: Coordinator, Sendable {
 	associatedtype ViewCoordinatorContentView: View
 	/// What the coordinator displays as its main content
 	var view: ViewCoordinatorContentView { get }
