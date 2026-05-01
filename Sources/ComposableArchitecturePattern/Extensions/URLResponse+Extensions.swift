@@ -11,7 +11,15 @@ import FoundationNetworking
 #endif
 
 public extension URLResponse {
-	func analyzeAsHTTPResponse() throws -> Bool {
+	/// Maps an HTTP response (and optional response body) to either success
+	/// (`true`) or a thrown `ServerAPIError`. When `body` is supplied and the
+	/// status falls in 4xx (other than 401), the body is preserved on
+	/// `ServerAPIError.http` so callers can decode structured error envelopes.
+	///
+	/// - Parameter body: Optional response body data captured alongside the
+	///   response. Pass `nil` when the body isn't available — the resulting
+	///   `.http` error will carry only the status code.
+	func analyzeAsHTTPResponse(body: Data? = nil) throws -> Bool {
 		guard let httpResponse = self as? HTTPURLResponse else {
 			throw ServerAPIError.unknown(description: "Unable to unwrap as `HTTPURLResponse`")
 		}
@@ -24,7 +32,11 @@ public extension URLResponse {
 			case 401:
 				throw ServerAPIError.unauthorized(description: httpResponse.description)
 			case 400...499:
-				throw ServerAPIError.network(description: httpResponse.description)
+				throw ServerAPIError.http(
+					description: httpResponse.description,
+					statusCode: httpResponse.statusCode,
+					body: body
+				)
 			case 500...599:
 				throw ServerAPIError.server(description: httpResponse.description, httpStatusCode: httpResponse.statusCode)
 			default:

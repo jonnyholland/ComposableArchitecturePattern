@@ -90,7 +90,7 @@ public actor AsyncHTTPClientCourier: Courier {
 				throw ServerAPIError.unauthorized(description: "HTTP 401")
 			case 400...499:
 				self.logger.error("\(Date()) - (\(requestUID)) Request to \(url.absoluteString) { Failed: \(statusCode) }")
-				throw ServerAPIError.network(description: "HTTP \(statusCode)")
+				throw ServerAPIError.http(description: "HTTP \(statusCode)", statusCode: statusCode, body: data)
 			case 500...599:
 				self.logger.error("\(Date()) - (\(requestUID)) Request to \(url.absoluteString) { Failed: \(statusCode) }")
 				throw ServerAPIError.server(description: "HTTP \(statusCode)", httpStatusCode: statusCode)
