@@ -20,7 +20,12 @@ public enum ServerAPIError: Error {
 	/// The request was unauthorized (HTTP 401).
 	case unauthorized(description: String? = nil)
 	/// An error occurred with the network.
+	@available(*, deprecated, message: "Use .http(description:statusCode:body:) which preserves the response body for structured error decoding.")
 	case network(description: String? = nil)
+	/// An HTTP 4xx error with the response status code and optional response body
+	/// preserved so callers can decode structured error envelopes such as
+	/// `{"error": {"code": "USER_HAS_CLUSTER", "message": "..."}}`.
+	case http(description: String? = nil, statusCode: Int, body: Data? = nil)
 	/// Functionality to complete the API request is incomplete.
 	case notImplemented(description: String? = nil)
 	/// An error occurred with the server.

@@ -46,7 +46,7 @@ public actor DefaultCourier: Courier {
 			self.logger.info("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) [Finish]")
 		}
 
-		guard try response.analyzeAsHTTPResponse() else {
+		guard try response.analyzeAsHTTPResponse(body: data) else {
 			self.logger.error("\(Date()) - (\(requestUID)) Request to \(String(describing: request.url?.description)) { Failed }")
 			throw ServerAPIError.unknown(description: "Unable to complete server response.")
 		}
