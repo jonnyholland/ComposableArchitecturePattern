@@ -660,9 +660,14 @@ public extension Server {
 
 extension Server {
 	private func _decode<DecodableType: Decodable>(data: Data?, dateDecodingStrategy: JSONDecoder.DateDecodingStrategy? = nil , keyDecodingStrategy: JSONDecoder.KeyDecodingStrategy? = nil) throws -> DecodableType {
-		guard let data else {
-			throw ServerAPIError.incorrectReponseData(description: NSLocalizedString("Unexpected empty response returned.", comment: ""))
-		}
+		// Treat both nil and zero-byte bodies (HTTP 204 / empty 200) the
+		// same as `{}` so callers that expect a no-fields marker type
+		// (`EmptyResponse` and friends) decode cleanly instead of dying
+		// with "Unexpected end of file". Endpoints that genuinely need
+		// to return data will still fail loudly via keyNotFound below,
+		// which is more diagnostic than the previous opaque "Unexpected
+		// empty response returned" message.
+		let payload: Data = (data?.isEmpty == false) ? data! : Data("{}".utf8)
 
 		do {
 			let decoder = JSONDecoder()
@@ -673,7 +678,7 @@ extension Server {
 				decoder.keyDecodingStrategy = keyDecodingStrategy
 			}
 
-			return try decoder.decode(DecodableType.self, from: data)
+			return try decoder.decode(DecodableType.self, from: payload)
 		} catch let decodingError as DecodingError {
 			let decodingErrorContextDescription = { (context: DecodingError.Context) -> String in
 				var description = context.debugDescription.appending("\nCoding Path: ")
